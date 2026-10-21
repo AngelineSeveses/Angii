@@ -1,0 +1,113 @@
+:root {
+  --ink: #111827;
+  --ivory: #f7f5f0;
+  --blue: #3b82f6;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --header-h: 64px;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-h);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'ss01' on;
+  overflow-x: clip;
+}
+
+h1, h2, h3, h4, h5 {
+  text-wrap: balance;
+}
+
+p, li, dd {
+  text-wrap: pretty;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--ivory);
+}
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+/* Scroll reveal. JS flips data-in once the element crosses into view. */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(4px);
+  transition:
+    opacity 900ms var(--ease-out),
+    transform 900ms var(--ease-out),
+    filter 900ms var(--ease-out);
+  transition-delay: var(--delay, 0ms);
+}
+
+.reveal[data-in='true'] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* First paint choreography for the hero, one time only. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(4px);
+  }
+}
+
+@keyframes unveil {
+  from {
+    opacity: 0;
+    clip-path: inset(6% 0 0 0 round 12px);
+    transform: translateY(32px);
+  }
+}
+
+.rise {
+  animation: rise 1000ms var(--ease-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.unveil {
+  animation: unveil 1400ms var(--ease-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    transform: none;
+    filter: none;
+    transition: opacity 400ms ease;
+  }
+
+  .rise,
+  .unveil {
+    animation: fadeOnly 400ms ease both;
+  }
+
+  @keyframes fadeOnly {
+    from {
+      opacity: 0;
+    }
+  }
+}
