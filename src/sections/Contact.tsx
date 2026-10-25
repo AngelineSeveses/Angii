@@ -9,72 +9,12 @@ import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'rea
 import { Btn } from '../components/Btn'
 import { Section, SectionIndex } from '../components/Layout'
 import { Reveal } from '../components/Reveal'
+import { SplitWords } from '../components/SplitWords'
 import { needs } from '../content/services'
-import { site } from '../content/site'
+import { mailto, site } from '../content/site'
 import { useInquiry } from '../context/inquiry'
 import { submitInquiry, type Inquiry } from '../lib/submitInquiry'
 import { canHover, color, ease, font } from '../theme/tokens'
-
-export function FinalCta() {
-  const { startInquiry } = useInquiry()
-  return (
-    <Section labelledBy="cta-title" tone="ink" sx={{ py: { xs: 24, md: 24 } }}>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(12, minmax(0, 1fr))' }, columnGap: 6, rowGap: 8 }}>
-        <Reveal sx={{ gridColumn: { md: 'span 3' }, pt: { md: 4 } }}>
-          <SectionIndex index="10" label="Have something in mind?" tone="ink" />
-        </Reveal>
-        <Box sx={{ gridColumn: { md: '4 / span 9' } }}>
-          <Reveal delay={60}>
-            <Typography
-              id="cta-title"
-              variant="h1"
-              component="h2"
-              sx={{ color: color.onInk, fontSize: { xs: '2.25rem', sm: '3rem', lg: '3.75rem' }, maxWidth: 820 }}
-            >
-              Tell me what you&rsquo;re working on.
-            </Typography>
-          </Reveal>
-          <Reveal delay={120}>
-            <Typography variant="subtitle1" sx={{ color: color.onInkMuted, mt: 8, maxWidth: 600 }}>
-              Need a website? Have an interactive idea you&rsquo;d like to explore? Or looking for someone who can help
-              with both the design and technical side of a project?
-            </Typography>
-            <Typography variant="subtitle1" sx={{ color: color.onInk, mt: 4, maxWidth: 600 }}>
-              Tell me a little about it. We can figure out the next step from there.
-            </Typography>
-          </Reveal>
-          <Reveal delay={180} sx={{ mt: 10, display: 'flex', flexWrap: 'wrap', alignItems: 'center', columnGap: 8, rowGap: 4 }}>
-            <Btn tone="primary" onClick={() => startInquiry()} endIcon={<ArrowRight size={18} weight="bold" />}>
-              Start a Project
-            </Btn>
-            <Box
-              component="a"
-              href={`mailto:${site.email}`}
-              sx={{
-                color: color.onInk,
-                fontSize: '1rem',
-                lineHeight: '24px',
-                fontWeight: 500,
-                textDecoration: 'underline',
-                textDecorationColor: color.onInkRule,
-                textUnderlineOffset: '6px',
-                transition: 'text-decoration-color 200ms ease',
-                [canHover]: { '&:hover': { textDecorationColor: color.onInk } },
-              }}
-            >
-              {site.email}
-            </Box>
-          </Reveal>
-          <Reveal delay={220}>
-            <Typography variant="body2" sx={{ color: color.onInkMuted, mt: 8 }}>
-              Not everything needs to be figured out before the first conversation.
-            </Typography>
-          </Reveal>
-        </Box>
-      </Box>
-    </Section>
-  )
-}
 
 const budgets = ['Not sure yet', 'Under $2,000', '$2,000 to $5,000', '$5,000 to $10,000', '$10,000+']
 const timelines = ['Flexible', 'As soon as possible', 'Within a month', 'One to three months', 'Three months or more']
@@ -102,14 +42,18 @@ export function ContactForm() {
   const [touched, setTouched] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
   const successRef = useRef<HTMLDivElement>(null)
+  const [seenNonce, setSeenNonce] = useState(preset.nonce)
 
   // A service CTA elsewhere on the page preselects its matching need.
-  useEffect(() => {
-    if (!preset.need) return
+  // Adjusted during render rather than in an effect, so it lands in the same commit.
+  if (preset.nonce !== seenNonce) {
+    setSeenNonce(preset.nonce)
     const need = preset.need
-    setForm((f) => (f.needs.includes(need) ? f : { ...f, needs: [...f.needs, need] }))
-    setStatus((s) => (s === 'sent' ? 'idle' : s))
-  }, [preset])
+    if (need) {
+      setForm((f) => (f.needs.includes(need) ? f : { ...f, needs: [...f.needs, need] }))
+      setStatus((s) => (s === 'sent' ? 'idle' : s))
+    }
+  }
 
   useEffect(() => {
     if (status === 'sent') successRef.current?.focus()
@@ -147,42 +91,39 @@ export function ContactForm() {
   }
 
   return (
-    <Section id="contact" labelledBy="contact-title" tone="paper">
+    <Section id="contact" labelledBy="contact-title" tone="ivory">
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(12, minmax(0, 1fr))' }, columnGap: 6, rowGap: 12, alignItems: 'start' }}>
-        <Box sx={{ gridColumn: { md: 'span 4' }, position: { md: 'sticky' }, top: { md: 112 } }}>
+        <Box sx={{ gridColumn: { md: 'span 5' }, position: { md: 'sticky' }, top: { md: 112 } }}>
           <Reveal>
-            <Typography id="contact-title" variant="h2">
-              Let&rsquo;s talk about your project.
-            </Typography>
+            <SectionIndex index="06" label="Contact" />
           </Reveal>
-          <Reveal delay={60}>
-            <Typography variant="subtitle1" sx={{ color: color.slate, mt: 6 }}>
-              A few details will help me understand what you&rsquo;re looking for.
+          <SplitWords id="contact-title" text="Tell me what you're working on." sx={{ typography: 'h2', m: 0, mt: { xs: 4, md: 6 }, maxWidth: 560 }} />
+          <Typography variant="subtitle1" sx={{ color: color.slate, mt: 6 }}>
+            A website, an interactive idea, or something that needs both design and technical help. A few details are
+            enough to start.
+          </Typography>
+          <Typography variant="body2" sx={{ color: color.muted, mt: 4 }}>
+            Not everything needs to be figured out before the first conversation.
+          </Typography>
+          <Box sx={{ mt: 10, pt: 6, boxShadow: `inset 0 1px 0 ${color.rule}` }}>
+            <Typography variant="overline" component="p" sx={{ color: color.muted, m: 0 }}>
+              Prefer email?
             </Typography>
-          </Reveal>
-          <Reveal delay={120}>
-            <Box sx={{ mt: 10, pt: 6, boxShadow: `inset 0 1px 0 ${color.rule}` }}>
-              <Typography variant="overline" component="p" sx={{ color: color.muted, m: 0 }}>
-                Prefer email?
-              </Typography>
-              <Box component="a" href={`mailto:${site.email}`} sx={{ color: color.ink, fontWeight: 500, textUnderlineOffset: '4px', textDecorationColor: color.ruleStrong }}>
-                {site.email}
-              </Box>
+            <Box component="a" href={mailto} sx={{ color: color.ink, fontWeight: 500, textUnderlineOffset: '4px', textDecorationColor: color.ruleStrong }}>
+              {site.email}
             </Box>
-          </Reveal>
+          </Box>
         </Box>
 
-        <Reveal delay={80} sx={{ gridColumn: { md: '6 / span 7' } }}>
+        <Box sx={{ gridColumn: { md: '7 / span 6' }, bgcolor: color.paper, borderRadius: { xs: '20px', md: '28px' }, p: { xs: 5, sm: 8, md: 10 } }}>
           {status === 'sent' ? (
             <Box
               ref={successRef}
               tabIndex={-1}
               role="status"
               sx={{
-                p: { xs: 6, sm: 10 },
-                borderRadius: '12px',
-                bgcolor: color.ivory,
-                boxShadow: `inset 0 0 0 1px ${color.rule}`,
+                p: { xs: 2, sm: 4 },
+                outline: 'none',
                 animation: `rise 600ms ${ease.out} both`,
               }}
             >
@@ -250,7 +191,7 @@ export function ContactForm() {
 
               <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 4, pt: 2 }}>
                 <Btn type="submit" tone="primary" disabled={status === 'sending'} endIcon={status === 'sending' ? undefined : <ArrowRight size={18} weight="bold" />}>
-                  {status === 'sending' ? 'Sending…' : 'Send Inquiry'}
+                  {status === 'sending' ? 'Sending…' : 'Send inquiry'}
                 </Btn>
                 <Typography id="form-note" variant="caption" sx={{ color: color.muted }}>
                   Fields marked optional can be left blank.
@@ -264,7 +205,7 @@ export function ContactForm() {
                     display: 'flex',
                     gap: 3,
                     p: 4,
-                    borderRadius: '8px',
+                    borderRadius: '12px',
                     bgcolor: '#FEF3F2',
                     boxShadow: 'inset 0 0 0 1px #FECDCA',
                     color: '#912018',
@@ -274,7 +215,7 @@ export function ContactForm() {
                   <WarningCircle size={20} aria-hidden style={{ flexShrink: 0, marginTop: 2 }} />
                   <Typography variant="body2" sx={{ color: 'inherit' }}>
                     Something went wrong while sending your message. Please try again or{' '}
-                    <Box component="a" href={`mailto:${site.email}`} sx={{ color: 'inherit', fontWeight: 600 }}>
+                    <Box component="a" href={mailto} sx={{ color: 'inherit', fontWeight: 600 }}>
                       email me directly
                     </Box>
                     .
@@ -283,7 +224,7 @@ export function ContactForm() {
               )}
             </Box>
           )}
-        </Reveal>
+        </Box>
       </Box>
     </Section>
   )
@@ -333,21 +274,21 @@ function ErrorText({ id, message }: { id: string; message?: string }) {
 
 const inputSx = (invalid: boolean) => ({
   width: '100%',
-  bgcolor: color.paper,
-  borderRadius: '6px',
+  bgcolor: color.ivory,
+  borderRadius: '12px',
   fontSize: '1rem',
   lineHeight: '24px',
   '& .MuiOutlinedInput-input': { py: 3, px: 4, height: 'auto' },
   '&.MuiInputBase-multiline': { p: 0 },
   '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: invalid ? '#B42318' : color.ruleStrong,
+    borderColor: invalid ? '#B42318' : 'transparent',
     transition: 'border-color 200ms ease, box-shadow 200ms ease',
   },
   [canHover]: { '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: invalid ? '#B42318' : color.ink } },
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
     borderColor: invalid ? '#B42318' : color.blueDeep,
     borderWidth: '1px',
-    boxShadow: `0 0 0 3px ${invalid ? 'rgba(180,35,24,0.16)' : 'rgba(37,99,235,0.18)'}`,
+    boxShadow: `0 0 0 3px ${invalid ? 'rgba(180,35,24,0.16)' : 'rgba(43,58,247,0.18)'}`,
   },
   '& ::placeholder': { color: color.muted, opacity: 1 },
 })
@@ -399,8 +340,8 @@ function ChoiceSelect({ id, value, options, onChange }: { id: string; value: str
           paper: {
             sx: {
               mt: 1,
-              borderRadius: '8px',
-              boxShadow: `0 0 0 1px ${color.rule}, 0 16px 32px -16px rgba(17,24,39,0.24)`,
+              borderRadius: '12px',
+              boxShadow: `0 0 0 1px ${color.rule}, 0 16px 32px -16px rgba(14,14,14,0.24)`,
               '& .MuiMenuItem-root': { fontSize: '1rem', py: 2 },
             },
           },
@@ -429,14 +370,14 @@ function NeedChip({ label, selected, onToggle }: { label: string; selected: bool
         gap: 2,
         px: 4,
         py: 2,
-        borderRadius: '6px',
+        borderRadius: '999px',
         fontSize: '0.875rem',
         lineHeight: '20px',
         fontWeight: 500,
         fontFamily: font.body,
         color: selected ? color.ivory : color.ink,
-        bgcolor: selected ? color.ink : color.paper,
-        boxShadow: `inset 0 0 0 1px ${selected ? color.ink : color.ruleStrong}`,
+        bgcolor: selected ? color.ink : color.ivory,
+        boxShadow: `inset 0 0 0 1px ${selected ? color.ink : 'transparent'}`,
         transition: `background-color 200ms ease, color 200ms ease, box-shadow 200ms ease, transform 160ms ${ease.out}`,
         '&:active': { transform: 'scale(0.97)' },
         [canHover]: { '&:hover': { boxShadow: `inset 0 0 0 1px ${color.ink}` } },

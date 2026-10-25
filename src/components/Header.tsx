@@ -1,14 +1,17 @@
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Typography from '@mui/material/Typography'
-import { ArrowRight } from '@phosphor-icons/react'
+import { ArrowRight, ArrowUpRight } from '@phosphor-icons/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { nav, site, type NavId } from '../content/site'
+import { nav, mailto, site, type NavId } from '../content/site'
 import { useInquiry } from '../context/inquiry'
 import { useActiveSection } from '../hooks/useActiveSection'
+import { sectionHref } from '../lib/links'
+import { pauseScroll } from '../motion/motion'
 import { canHover, color, ease, font } from '../theme/tokens'
 import { Btn } from './Btn'
 import { Wrap } from './Layout'
+import { LogoMark } from './Logo'
 
 const navIds = nav.map((n) => n.id)
 
@@ -18,14 +21,18 @@ export function Wordmark({ tone = 'ink' }: { tone?: 'ink' | 'ivory' }) {
       component="span"
       sx={{
         fontFamily: font.display,
-        fontWeight: 600,
-        fontSize: '1.125rem',
+        fontWeight: 500,
+        fontSize: '1.0625rem',
         lineHeight: '28px',
-        letterSpacing: '-0.02em',
+        letterSpacing: '-0.025em',
         color: tone === 'ink' ? color.ink : color.onInk,
         whiteSpace: 'nowrap',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 2.5,
       }}
     >
+      <LogoMark size={28} />
       {site.name}
     </Typography>
   )
@@ -57,36 +64,50 @@ export function Header() {
           top: 0,
           zIndex: 1200,
           height: 'var(--header-h)',
-          bgcolor: color.ivory,
+          // Frosted ivory: the page keeps moving underneath instead of
+          // disappearing behind a solid bar.
+          bgcolor: 'rgba(241, 240, 236, 0.86)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           boxShadow: scrolled ? `0 1px 0 ${color.rule}` : `0 1px 0 transparent`,
           transition: 'box-shadow 300ms ease',
+          '@media (prefers-reduced-transparency: reduce)': { bgcolor: color.ivory, backdropFilter: 'none', WebkitBackdropFilter: 'none' },
         }}
       >
         <Wrap sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
-          <Box
-            component="a"
-            href="#top"
-            aria-label={`${site.name}, back to top`}
-            onClick={() => setOpen(false)}
-            sx={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}
-          >
-            <Wordmark />
+          {/* Mark and name, then the page links beside them; the call to action sits alone on the right. */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Box
+              component="a"
+              href={sectionHref('top')}
+              aria-label={`${site.name}, back to top`}
+              onClick={() => setOpen(false)}
+              sx={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}
+            >
+              <Wordmark />
+            </Box>
+            <Box component="nav" aria-label="Primary" sx={{ display: { xs: 'none', md: 'block' } }}>
+              <Box component="ul" sx={{ display: 'flex', gap: 8, listStyle: 'none', m: 0, p: 0 }}>
+                {nav.map((item) => (
+                  <li key={item.id}>
+                    <NavLink href={sectionHref(item.id)} current={active === item.id}>
+                      {item.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </Box>
+            </Box>
           </Box>
 
-          <Box component="nav" aria-label="Primary" sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 8 }}>
-            <Box component="ul" sx={{ display: 'flex', gap: 8, listStyle: 'none', m: 0, p: 0 }}>
-              {nav.map((item) => (
-                <li key={item.id}>
-                  <NavLink href={`#${item.id}`} current={active === item.id}>
-                    {item.label}
-                  </NavLink>
-                </li>
-              ))}
-            </Box>
-            <Btn tone="ink" size="sm" onClick={() => startInquiry()}>
-              Let&rsquo;s Talk
-            </Btn>
-          </Box>
+          <Btn
+            tone="ink"
+            size="sm"
+            onClick={() => startInquiry()}
+            endIcon={<ArrowUpRight size={16} weight="bold" />}
+            sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+          >
+            Let&rsquo;s talk
+          </Btn>
 
           <MenuToggle open={open} onToggle={() => setOpen((o) => !o)} />
         </Wrap>
@@ -177,6 +198,7 @@ function MobileMenu({ open, onClose, active }: { open: boolean; onClose: () => v
     if (!open) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    pauseScroll(true)
     firstLink.current?.focus({ preventScroll: true })
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
@@ -185,6 +207,7 @@ function MobileMenu({ open, onClose, active }: { open: boolean; onClose: () => v
     mq.addEventListener('change', onWide)
     return () => {
       document.body.style.overflow = prev
+      pauseScroll(false)
       window.removeEventListener('keydown', onKey)
       mq.removeEventListener('change', onWide)
     }
@@ -222,7 +245,7 @@ function MobileMenu({ open, onClose, active }: { open: boolean; onClose: () => v
               <Box
                 component="a"
                 ref={i === 0 ? firstLink : undefined}
-                href={`#${item.id}`}
+                href={sectionHref(item.id)}
                 onClick={onClose}
                 aria-current={active === item.id ? 'true' : undefined}
                 sx={{
@@ -274,7 +297,7 @@ function MobileMenu({ open, onClose, active }: { open: boolean; onClose: () => v
         >
           Let&rsquo;s Talk
         </Btn>
-        <Box component="a" href={`mailto:${site.email}`} sx={{ color: color.slate, fontSize: '1rem', lineHeight: '24px' }}>
+        <Box component="a" href={mailto} sx={{ color: color.slate, fontSize: '1rem', lineHeight: '24px' }}>
           {site.email}
         </Box>
       </Box>

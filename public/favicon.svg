@@ -1,4 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="14" fill="#111827"/>
-  <text x="32" y="42" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="27" font-weight="600" letter-spacing="-1.2" fill="#C6A477">AS</text>
+  <g transform="translate(12 12) scale(0.8333)">
+    <g fill="none" stroke="#F7F5F0" stroke-width="4.4">
+      <circle cx="10.7" cy="10.7" r="7.5"/>
+      <path d="M18.2 1V20.4"/>
+      <path d="M44.6 32.21C43.42 30.66 41.25 29.8 38.49 29.8C34.95 29.8 32.39 31.35 32.39 33.59C32.39 36.01 35.14 36.61 38.3 37.13C41.65 37.64 44.8 38.33 44.8 41.01C44.8 43.42 42.04 44.8 38.3 44.8C35.34 44.8 32.58 43.85 31.4 41.87"/>
+    </g>
+    <path d="M33.34 1H36.66L14.66 47H11.34Z" fill="#C6A477"/>
+  </g>
 </svg>

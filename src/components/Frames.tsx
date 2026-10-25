@@ -1,90 +1,97 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ArrowUpRight } from '@phosphor-icons/react'
-import { canHover, color, ease, reducedMotion } from '../theme/tokens'
+import { canHover, color, ease } from '../theme/tokens'
 
-type BrowserFrameProps = {
+type ProjectShotProps = {
   src: string
   alt: string
   href: string
   label: string
   name: string
-  dark?: boolean
-  priority?: boolean
+  // Text on the dark pill, e.g. "Read more" for a case study link.
+  action?: string
+  // Width / height of the frame. The screenshot is cropped from the top.
+  aspect?: string
 }
 
-// A quiet browser frame. On hover it slowly scrolls the full length homepage
-// screenshot inside the 16:10 viewport, so visitors can read the whole page.
-export function BrowserFrame({ src, alt, href, label, name, dark = false, priority = false }: BrowserFrameProps) {
-  const frameBg = dark ? color.inkRaised : color.ivoryDeep
-  const ring = dark ? color.onInkRule : color.rule
-  const meta = dark ? color.onInkMuted : color.muted
-
+// A still screenshot in a rounded frame. External links open in a new tab;
+// a case study link stays in the page.
+export function ProjectShot({ src, alt, href, label, name, action = 'Open live site', aspect = '16 / 10' }: ProjectShotProps) {
+  const external = /^https?:/.test(href)
   return (
     <Box
       component="a"
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`${name}, open the live site in a new tab`}
+      {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
+      aria-label={external ? `${name}, open the live site in a new tab` : `${name}: ${action.toLowerCase()}`}
       sx={{
         display: 'block',
-        borderRadius: '12px',
-        p: 2,
-        pt: 0,
-        bgcolor: frameBg,
-        boxShadow: `inset 0 0 0 1px ${ring}`,
+        position: 'relative',
+        aspectRatio: aspect,
+        overflow: 'hidden',
+        borderRadius: { xs: '14px', md: '20px' },
+        bgcolor: color.ivoryDeep,
         color: 'inherit',
         textDecoration: 'none',
-        '& .frame-shot': {
-          transform: 'translateY(0)',
-          transition: `transform 1100ms ${ease.out}`,
-        },
-        '& .frame-go': { transition: `transform 200ms ${ease.out}, opacity 200ms ease`, opacity: 0.6 },
+        '& .shot-img': { transition: `transform 700ms ${ease.out}` },
+        '& .shot-go': { transition: `transform 200ms ${ease.out}` },
         [canHover]: {
-          '&:hover .frame-shot, &:focus-visible .frame-shot': {
-            // 62.5cqw is the viewport height (16:10) in container units.
-            transform: 'translateY(calc(-100% + 62.5cqw))',
-            transition: 'transform 9s cubic-bezier(0.65, 0, 0.35, 1)',
-          },
-          '&:hover .frame-go': { transform: 'translate(2px, -2px)', opacity: 1 },
-        },
-        [reducedMotion]: {
-          '&:hover .frame-shot, &:focus-visible .frame-shot': { transform: 'none' },
+          '&:hover .shot-img': { transform: 'scale(1.025)' },
+          '&:hover .shot-go': { transform: 'translate(2px, -2px)' },
         },
       }}
     >
-      <Box sx={{ height: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2 }}>
-        <Typography variant="caption" sx={{ color: meta, fontVariantNumeric: 'tabular-nums' }}>
-          {label}
-        </Typography>
-        <Box className="frame-go" sx={{ display: 'flex', color: meta }}>
-          <ArrowUpRight size={14} weight="bold" aria-hidden />
-        </Box>
-      </Box>
+      <Box
+        component="img"
+        className="shot-img"
+        src={src}
+        alt={alt}
+        width={1440}
+        height={900}
+        loading="lazy"
+        decoding="async"
+        sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+      />
       <Box
         sx={{
-          position: 'relative',
-          aspectRatio: '16 / 10',
-          overflow: 'hidden',
-          // outer 12px radius minus 8px inset
-          borderRadius: '4px',
-          containerType: 'inline-size',
-          bgcolor: dark ? '#0B0F17' : color.paper,
+          position: 'absolute',
+          top: { xs: 10, md: 16 },
+          left: { xs: 10, md: 16 },
+          right: { xs: 10, md: 16 },
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 2,
+          pointerEvents: 'none',
         }}
       >
+        <Typography
+          variant="caption"
+          sx={{ px: 3, py: 1.5, borderRadius: '999px', bgcolor: 'rgba(241, 240, 236, 0.92)', color: color.ink, backdropFilter: 'blur(8px)' }}
+        >
+          {label}
+        </Typography>
         <Box
-          component="img"
-          className="frame-shot"
-          src={src}
-          alt={alt}
-          width={1200}
-          height={5250}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
-          fetchPriority={priority ? 'high' : 'auto'}
-          sx={{ position: 'absolute', inset: '0 0 auto 0', width: '100%', height: 'auto' }}
-        />
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            px: 3,
+            py: 1.5,
+            borderRadius: '999px',
+            bgcolor: 'rgba(14, 14, 14, 0.82)',
+            color: color.onInk,
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <Typography variant="caption" component="span" aria-hidden>
+            {action}
+          </Typography>
+          <Box className="shot-go" sx={{ display: 'flex' }}>
+            <ArrowUpRight size={14} weight="bold" aria-hidden />
+          </Box>
+        </Box>
       </Box>
     </Box>
   )
@@ -105,10 +112,10 @@ export function PhoneFrame({ src, alt, dark = false, priority = false, width = 1
         width,
         p: '6px',
         borderRadius: '28px',
-        bgcolor: dark ? '#0B0F17' : color.ink,
+        bgcolor: dark ? '#0B0B0B' : color.ink,
         boxShadow: dark
           ? `inset 0 0 0 1px ${color.onInkRule}, 0 32px 64px -32px rgba(0,0,0,0.7)`
-          : '0 32px 64px -32px rgba(17,24,39,0.45), 0 2px 4px rgba(17,24,39,0.08)',
+          : '0 24px 48px -28px rgba(14,14,14,0.45), 0 2px 4px rgba(14,14,14,0.08)',
       }}
     >
       <Box sx={{ borderRadius: '22px', overflow: 'hidden', aspectRatio: '780 / 1688', bgcolor: color.paper }}>

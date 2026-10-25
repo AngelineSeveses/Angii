@@ -25,38 +25,40 @@ export const theme = createTheme({
     fontWeightRegular: 400,
     fontWeightMedium: 500,
     fontWeightBold: 600,
+    // Display sizes run large and regular weight with tight tracking; the
+    // tracking loosens as the size drops.
     h1: {
       fontFamily: font.display,
-      fontWeight: 500,
-      fontSize: '2.25rem', // 36
-      lineHeight: 1.12,
-      letterSpacing: '-0.025em',
-      '@media (min-width:640px)': { fontSize: '3rem', lineHeight: 1.04 }, // 48
-      '@media (min-width:1200px)': { fontSize: '3.75rem', lineHeight: 1.02 }, // 60
+      fontWeight: 400,
+      fontSize: '2.75rem', // 44
+      lineHeight: 1,
+      letterSpacing: '-0.04em',
+      '@media (min-width:640px)': { fontSize: '4rem' }, // 64
+      '@media (min-width:1200px)': { fontSize: '5.5rem', lineHeight: 0.96 }, // 88
     },
     h2: {
       fontFamily: font.display,
-      fontWeight: 500,
-      fontSize: '1.875rem', // 30
-      lineHeight: 1.2,
-      letterSpacing: '-0.02em',
-      '@media (min-width:640px)': { fontSize: '2.25rem', lineHeight: 1.12 }, // 36
-      '@media (min-width:1200px)': { fontSize: '3rem', lineHeight: 1.06 }, // 48
+      fontWeight: 400,
+      fontSize: '2.25rem', // 36
+      lineHeight: 1.04,
+      letterSpacing: '-0.035em',
+      '@media (min-width:640px)': { fontSize: '3rem' }, // 48
+      '@media (min-width:1200px)': { fontSize: '4.5rem', lineHeight: 1 }, // 72
     },
     h3: {
       fontFamily: font.display,
-      fontWeight: 500,
-      fontSize: '1.5rem', // 24
-      lineHeight: 1.333,
-      letterSpacing: '-0.015em',
-      '@media (min-width:900px)': { fontSize: '1.875rem', lineHeight: 1.2 }, // 30
+      fontWeight: 400,
+      fontSize: '1.75rem', // 28
+      lineHeight: 1.1,
+      letterSpacing: '-0.03em',
+      '@media (min-width:900px)': { fontSize: '2.25rem', lineHeight: 1.06 }, // 36
     },
     h4: {
       fontFamily: font.display,
       fontWeight: 500,
-      fontSize: '1.25rem', // 20
-      lineHeight: 1.4,
-      letterSpacing: '-0.01em',
+      fontSize: '1.375rem', // 22
+      lineHeight: 1.27,
+      letterSpacing: '-0.02em',
     },
     h5: {
       fontFamily: font.display,
@@ -68,13 +70,14 @@ export const theme = createTheme({
     subtitle1: { fontSize: '1.125rem', lineHeight: 1.556, fontWeight: 400 }, // lead 18/28
     body1: { fontSize: '1rem', lineHeight: 1.5 }, // 16/24
     body2: { fontSize: '0.875rem', lineHeight: 1.4286 }, // 14/20
+    // Small sentence-case labels, not shouting caps.
     overline: {
       fontFamily: font.body,
-      fontSize: '0.75rem', // 12/16
-      lineHeight: 1.333,
+      fontSize: '0.8125rem', // 13/18
+      lineHeight: 1.385,
       fontWeight: 500,
-      letterSpacing: '0.08em',
-      textTransform: 'uppercase',
+      letterSpacing: '0.005em',
+      textTransform: 'none',
     },
     caption: { fontSize: '0.75rem', lineHeight: 1.333, fontWeight: 500, letterSpacing: '0.01em' },
     button: { fontWeight: 600, textTransform: 'none', letterSpacing: 0 },

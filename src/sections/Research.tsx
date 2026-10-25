@@ -14,7 +14,7 @@ const entryFormat = [
   { label: 'What I learned', hint: 'What I would do next time' },
 ]
 
-const interests = ['JavaScript interactions', 'React interfaces', '3DVista customization', 'Design & dev workflow tools']
+const interests = ['JavaScript interactions', 'React interfaces', 'Design & dev workflow tools']
 
 export function Research() {
   const hasLink = Boolean(site.experimentsHref)

@@ -2,7 +2,10 @@ import Button, { type ButtonProps } from '@mui/material/Button'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { canHover, color, ease } from '../theme/tokens'
 
-export type Tone = 'primary' | 'ink' | 'outline' | 'light' | 'outlineLight'
+// primary and ink are the same black pill; accent is the ultramarine pill for
+// the one call to action that should pop; light and outlineLight sit on dark
+// or ultramarine blocks.
+export type Tone = 'primary' | 'ink' | 'accent' | 'outline' | 'light' | 'outlineLight'
 
 type BtnProps = Omit<ButtonProps, 'variant' | 'color' | 'size'> & {
   tone?: Tone
@@ -11,22 +14,25 @@ type BtnProps = Omit<ButtonProps, 'variant' | 'color' | 'size'> & {
   rel?: string
 }
 
+const black: SxProps<Theme> = {
+  bgcolor: color.ink,
+  color: color.ivory,
+  [canHover]: { '&:hover': { bgcolor: '#2A2A28' } },
+}
+
 const tones: Record<Tone, SxProps<Theme>> = {
-  primary: {
-    bgcolor: color.blueDeep,
-    color: '#FFFFFF',
-    [canHover]: { '&:hover': { bgcolor: '#1D4ED8' } },
-  },
-  ink: {
-    bgcolor: color.ink,
-    color: color.ivory,
-    [canHover]: { '&:hover': { bgcolor: color.slate } },
+  primary: black,
+  ink: black,
+  accent: {
+    bgcolor: color.accent,
+    color: color.onAccent,
+    [canHover]: { '&:hover': { bgcolor: '#1F2CD6' } },
   },
   outline: {
-    bgcolor: 'transparent',
+    bgcolor: color.paper,
     color: color.ink,
-    boxShadow: `inset 0 0 0 1px ${color.ruleStrong}`,
-    [canHover]: { '&:hover': { boxShadow: `inset 0 0 0 1px ${color.ink}`, bgcolor: 'transparent' } },
+    boxShadow: `inset 0 0 0 1px ${color.rule}`,
+    [canHover]: { '&:hover': { boxShadow: `inset 0 0 0 1px ${color.ink}`, bgcolor: color.paper } },
   },
   light: {
     bgcolor: color.ivory,
@@ -35,9 +41,9 @@ const tones: Record<Tone, SxProps<Theme>> = {
   },
   outlineLight: {
     bgcolor: 'transparent',
-    color: color.onInk,
-    boxShadow: `inset 0 0 0 1px ${color.onInkRule}`,
-    [canHover]: { '&:hover': { boxShadow: `inset 0 0 0 1px ${color.onInkMuted}`, bgcolor: 'transparent' } },
+    color: 'inherit',
+    boxShadow: `inset 0 0 0 1px currentColor`,
+    [canHover]: { '&:hover': { bgcolor: 'rgba(241, 240, 236, 0.12)' } },
   },
 }
 
@@ -49,8 +55,8 @@ export function Btn({ tone = 'primary', size = 'md', sx, children, ...rest }: Bt
       sx={[
         {
           minWidth: 0,
-          borderRadius: '6px',
-          fontWeight: 600,
+          borderRadius: '999px',
+          fontWeight: 500,
           fontSize: size === 'md' ? '1rem' : '0.875rem',
           lineHeight: size === 'md' ? '24px' : '20px',
           px: size === 'md' ? 6 : 4,
