@@ -11,10 +11,10 @@ import { pauseScroll } from '../motion/motion'
 import { canHover, color, ease, font } from '../theme/tokens'
 import { Btn } from './Btn'
 import { Wrap } from './Layout'
-import { LogoMark } from './Logo'
 
 const navIds = nav.map((n) => n.id)
 
+// The name is the logo: set in the display face, a size up from the nav, tightly tracked.
 export function Wordmark({ tone = 'ink' }: { tone?: 'ink' | 'ivory' }) {
   return (
     <Typography
@@ -22,17 +22,13 @@ export function Wordmark({ tone = 'ink' }: { tone?: 'ink' | 'ivory' }) {
       sx={{
         fontFamily: font.display,
         fontWeight: 500,
-        fontSize: '1.0625rem',
+        fontSize: '1.25rem',
         lineHeight: '28px',
-        letterSpacing: '-0.025em',
+        letterSpacing: '-0.04em',
         color: tone === 'ink' ? color.ink : color.onInk,
         whiteSpace: 'nowrap',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 2.5,
       }}
     >
-      <LogoMark size={28} />
       {site.name}
     </Typography>
   )
@@ -106,7 +102,7 @@ export function Header() {
             endIcon={<ArrowUpRight size={16} weight="bold" />}
             sx={{ display: { xs: 'none', md: 'inline-flex' } }}
           >
-            Let&rsquo;s talk
+            Let&rsquo;s Talk
           </Btn>
 
           <MenuToggle open={open} onToggle={() => setOpen((o) => !o)} />

@@ -30,7 +30,7 @@ function validate(f: Inquiry): Errors {
   if (!f.name.trim()) e.name = 'Please add your name.'
   if (!f.email.trim()) e.email = 'Please add your email so I can reply.'
   else if (!emailPattern.test(f.email.trim())) e.email = 'That email address looks incomplete.'
-  if (f.needs.length === 0) e.needs = 'Pick at least one option, or choose "Something else".'
+  if (f.needs.length === 0) e.needs = 'Pick at least one option, or choose "Not sure yet".'
   if (f.message.trim().length < 10) e.message = 'A sentence or two about the project is enough.'
   return e
 }
@@ -95,19 +95,19 @@ export function ContactForm() {
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(12, minmax(0, 1fr))' }, columnGap: 6, rowGap: 12, alignItems: 'start' }}>
         <Box sx={{ gridColumn: { md: 'span 5' }, position: { md: 'sticky' }, top: { md: 112 } }}>
           <Reveal>
-            <SectionIndex index="06" label="Contact" />
+            <SectionIndex index="07" label="Contact" />
           </Reveal>
-          <SplitWords id="contact-title" text="Tell me what you're working on." sx={{ typography: 'h2', m: 0, mt: { xs: 4, md: 6 }, maxWidth: 560 }} />
+          <SplitWords id="contact-title" text="Let's make your website work better." sx={{ typography: 'h2', m: 0, mt: { xs: 4, md: 6 }, maxWidth: 560 }} />
           <Typography variant="subtitle1" sx={{ color: color.slate, mt: 6 }}>
-            A website, an interactive idea, or something that needs both design and technical help. A few details are
-            enough to start.
+            Whether you&rsquo;re planning a new website, looking to improve an existing one, or need help keeping it up to
+            date, tell me a little about what you&rsquo;re working on.
           </Typography>
           <Typography variant="body2" sx={{ color: color.muted, mt: 4 }}>
-            Not everything needs to be figured out before the first conversation.
+            You don&rsquo;t need to have every detail figured out before reaching out.
           </Typography>
           <Box sx={{ mt: 10, pt: 6, boxShadow: `inset 0 1px 0 ${color.rule}` }}>
             <Typography variant="overline" component="p" sx={{ color: color.muted, m: 0 }}>
-              Prefer email?
+              Email
             </Typography>
             <Box component="a" href={mailto} sx={{ color: color.ink, fontWeight: 500, textUnderlineOffset: '4px', textDecorationColor: color.ruleStrong }}>
               {site.email}
@@ -136,12 +136,15 @@ export function ContactForm() {
               </Btn>
             </Box>
           ) : (
-            <Box component="form" noValidate onSubmit={onSubmit} aria-describedby="form-note" sx={{ display: 'grid', gap: 8 }}>
+            <Box component="form" noValidate onSubmit={onSubmit} aria-labelledby="form-title" sx={{ display: 'grid', gap: 8 }}>
+              <Typography id="form-title" variant="h3" component="h3" sx={{ m: 0 }}>
+                Tell me about your project.
+              </Typography>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 6 }}>
-                <Field id="name" label="Name" error={errors.name}>
+                <Field id="name" label="Name" required error={errors.name}>
                   <TextInput id="name" autoComplete="name" value={form.name} onChange={(v) => set('name', v)} error={errors.name} />
                 </Field>
-                <Field id="email" label="Email" error={errors.email}>
+                <Field id="email" label="Email" required error={errors.email}>
                   <TextInput id="email" type="email" autoComplete="email" value={form.email} onChange={(v) => set('email', v)} error={errors.email} />
                 </Field>
               </Box>
@@ -153,6 +156,7 @@ export function ContactForm() {
               <Box component="fieldset" sx={{ border: 0, m: 0, p: 0, minWidth: 0 }} aria-describedby={errors.needs ? 'field-needs-error' : undefined}>
                 <Box component="legend" sx={labelSx}>
                   What do you need?
+                  <Marker>Required</Marker>
                 </Box>
                 <Box id="field-needs" tabIndex={-1} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 3, outline: 'none' }}>
                   {needs.map((n) => (
@@ -162,7 +166,7 @@ export function ContactForm() {
                 <ErrorText id="field-needs-error" message={errors.needs} />
               </Box>
 
-              <Field id="message" label="Tell me about the project" error={errors.message}>
+              <Field id="message" label="A little about your project" required error={errors.message}>
                 <TextInput
                   id="message"
                   multiline
@@ -170,7 +174,7 @@ export function ContactForm() {
                   value={form.message}
                   onChange={(v) => set('message', v)}
                   error={errors.message}
-                  placeholder="What are you building, who is it for, and where are you stuck?"
+                  placeholder="What does your business do? What are you hoping to build or improve?"
                 />
               </Field>
 
@@ -191,10 +195,14 @@ export function ContactForm() {
 
               <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 4, pt: 2 }}>
                 <Btn type="submit" tone="primary" disabled={status === 'sending'} endIcon={status === 'sending' ? undefined : <ArrowRight size={18} weight="bold" />}>
-                  {status === 'sending' ? 'Sending…' : 'Send inquiry'}
+                  {status === 'sending' ? 'Sending…' : 'Send Project Inquiry'}
                 </Btn>
-                <Typography id="form-note" variant="caption" sx={{ color: color.muted }}>
-                  Fields marked optional can be left blank.
+                <Typography variant="body2" sx={{ color: color.muted }}>
+                  Prefer email? Write to{' '}
+                  <Box component="a" href={mailto} sx={{ color: color.ink, textUnderlineOffset: '3px', textDecorationColor: color.ruleStrong }}>
+                    {site.email}
+                  </Box>
+                  .
                 </Typography>
               </Box>
 
@@ -242,16 +250,23 @@ const labelSx = {
   alignItems: 'baseline',
 } as const
 
-function Field({ id, label, optional, error, children }: { id: string; label: string; optional?: boolean; error?: string; children: ReactNode }) {
+function Marker({ children }: { children: string }) {
+  return (
+    <Typography component="span" variant="caption" sx={{ color: color.muted, fontWeight: 400 }}>
+      {children}
+    </Typography>
+  )
+}
+
+type FieldProps = { id: string; label: string; required?: boolean; optional?: boolean; error?: string; children: ReactNode }
+
+function Field({ id, label, required, optional, error, children }: FieldProps) {
   return (
     <Box>
       <Box component="label" htmlFor={`field-${id}`} sx={labelSx}>
         {label}
-        {optional && (
-          <Typography component="span" variant="caption" sx={{ color: color.muted, fontWeight: 400 }}>
-            optional
-          </Typography>
-        )}
+        {required && <Marker>Required</Marker>}
+        {optional && <Marker>Optional</Marker>}
       </Box>
       <Box sx={{ mt: 2 }}>{children}</Box>
       <ErrorText id={`field-${id}-error`} message={error} />

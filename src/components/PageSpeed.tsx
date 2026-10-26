@@ -2,8 +2,10 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { visuallyHidden } from '@mui/utils'
 import { ArrowUpRight } from '@phosphor-icons/react'
-import type { PageSpeed, SpeedScores } from '../content/projects'
-import { canHover, color, ease } from '../theme/tokens'
+import type { PageSpeed, SpeedHighlight as ScorePick, SpeedScores } from '../content/projects'
+import { quotedScore } from '../lib/pageSpeed'
+import { canHover, color, ease, font } from '../theme/tokens'
+import { SectionIndex } from './Layout'
 
 // Google's own bands: 90–100 good, 50–89 needs work, 0–49 poor. The dot uses
 // the same colors as the PageSpeed report; the number always sits beside it,
@@ -14,32 +16,60 @@ function Dot({ score }: { score: number }) {
   return <Box component="span" aria-hidden sx={{ width: 8, height: 8, borderRadius: '999px', bgcolor: band(score), flexShrink: 0 }} />
 }
 
-// Compact version for the project cards: speed on mobile and desktop.
-export function SpeedBadges({ speed }: { speed: PageSpeed }) {
-  const pill = (label: string, score: number) => (
-    <Typography
-      component="li"
-      variant="caption"
-      sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, px: 3, py: 1.5, borderRadius: '999px', boxShadow: `inset 0 0 0 1px ${color.rule}`, color: color.ink }}
-    >
-      <Dot score={score} />
-      {label}
-      <Box component="span" sx={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
-        {score}
-      </Box>
-      <Box component="span" sx={visuallyHidden}>
-        out of 100
-      </Box>
-    </Typography>
-  )
+// One score on a project card, e.g. "93/100 Desktop Performance", linking to
+// the PageSpeed Insights report it comes from.
+export function SpeedHighlight({ speed, pick }: { speed: PageSpeed; pick?: ScorePick }) {
+  const { score, device, category, tested } = quotedScore(speed, pick)
+  const label = `${device} ${category}`
+  const source = `Google PageSpeed Insights, tested ${tested}`
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 2, mt: 4 }}>
-      <Typography variant="caption" component="p" sx={{ m: 0, color: color.muted }} title={`Google PageSpeed Insights, tested ${speed.measured}`}>
-        PageSpeed
-      </Typography>
-      <Box component="ul" aria-label={`PageSpeed performance scores, tested ${speed.measured}`} sx={{ listStyle: 'none', m: 0, p: 0, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-        {pill('Mobile', speed.mobile.performance)}
-        {pill('Desktop', speed.desktop.performance)}
+    <Box
+      component="a"
+      href={speed.report}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${score} out of 100, ${label}. ${source}. Open the report in a new tab.`}
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: { xs: 4, md: 5 },
+        mt: 6,
+        py: 3,
+        pl: { xs: 4, md: 5 },
+        pr: 4,
+        borderRadius: '18px',
+        bgcolor: color.paper,
+        color: color.ink,
+        textDecoration: 'none',
+        boxShadow: `inset 0 0 0 1px ${color.rule}`,
+        transition: 'box-shadow 200ms ease',
+        '& .speed-go': { transition: `transform 200ms ${ease.out}` },
+        [canHover]: {
+          '&:hover': { boxShadow: `inset 0 0 0 1px ${color.ink}` },
+          '&:hover .speed-go': { transform: 'translate(2px, -2px)' },
+        },
+      }}
+    >
+      <Box
+        component="span"
+        aria-hidden
+        sx={{ fontFamily: font.display, fontSize: { xs: '2rem', md: '2.25rem' }, lineHeight: 1, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}
+      >
+        {score}
+        <Box component="span" sx={{ fontSize: '0.5em', letterSpacing: '-0.01em', color: color.muted }}>
+          /100
+        </Box>
+      </Box>
+      <Box component="span" aria-hidden sx={{ display: 'grid', gap: 0.5 }}>
+        <Box component="span" sx={{ fontWeight: 500, fontSize: '0.9375rem', lineHeight: 1.3 }}>
+          {label}
+        </Box>
+        <Box component="span" sx={{ fontSize: '0.75rem', lineHeight: 1.35, color: color.muted }}>
+          {source}
+        </Box>
+      </Box>
+      <Box component="span" className="speed-go" aria-hidden sx={{ display: 'flex', color: color.muted, alignSelf: 'flex-start' }}>
+        <ArrowUpRight size={14} weight="bold" />
       </Box>
     </Box>
   )
@@ -61,7 +91,8 @@ const timingRows: { key: keyof SpeedScores; label: string }[] = [
 ]
 
 // Full results for a case study page.
-export function SpeedReport({ speed, name }: { speed: PageSpeed; name: string }) {
+// index: the chapter number on a case study page, e.g. "05".
+export function SpeedReport({ speed, name, index }: { speed: PageSpeed; name: string; index?: string }) {
   const cell = { py: 3, px: 0, textAlign: 'right' as const, fontVariantNumeric: 'tabular-nums', boxShadow: `inset 0 -1px 0 ${color.rule}` }
   const head = { ...cell, textAlign: 'left' as const, fontWeight: 400, color: color.slate }
 
@@ -69,12 +100,23 @@ export function SpeedReport({ speed, name }: { speed: PageSpeed; name: string })
     <Box
       component="section"
       aria-labelledby="speed-title"
-      sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(12, minmax(0, 1fr))' }, columnGap: 6, rowGap: 10, mt: { xs: 16, md: 24 } }}
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', md: 'repeat(12, minmax(0, 1fr))' },
+        columnGap: 6,
+        rowGap: 10,
+        mt: { xs: 16, md: 24 },
+        ...(index && { pt: { xs: 8, md: 10 }, boxShadow: `inset 0 1px 0 ${color.rule}` }),
+      }}
     >
       <Box sx={{ gridColumn: { md: 'span 4' } }}>
-        <Typography variant="overline" component="p" sx={{ m: 0, color: color.muted }}>
-          PageSpeed Insights
-        </Typography>
+        {index ? (
+          <SectionIndex index={index} label="PageSpeed Insights" />
+        ) : (
+          <Typography variant="overline" component="p" sx={{ m: 0, color: color.muted }}>
+            PageSpeed Insights
+          </Typography>
+        )}
         <Typography id="speed-title" variant="h3" component="h2" sx={{ mt: 2 }}>
           How the live site tests
         </Typography>

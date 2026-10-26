@@ -1,6 +1,7 @@
 export const site = {
   name: 'Angeline Seveses',
   role: 'Web Designer & Developer',
+  tagline: 'Thoughtful websites, considered design, and practical development.',
   email: 'angelinseveses@gmail.com',
   year: 2026,
   // Profiles from angelineseveses.vercel.app. Entries without an href are not
@@ -12,7 +13,8 @@ export const site = {
   ],
   // TODO: link once the experiments log exists (GitHub, a /lab page, etc.).
   experimentsHref: '',
-  // TODO: optional portrait for the About section, e.g. '/images/angeline.webp'.
+  // TODO: optional portrait, e.g. '/images/angeline.webp'. Once set, it shows as a small
+  // round photo beside "you work directly with me" in the hero.
   portrait: '' as string,
 } as const
 
@@ -21,7 +23,8 @@ export const mailto = `mailto:${site.email}?subject=${encodeURIComponent('Projec
 
 export const nav = [
   { id: 'work', label: 'Work' },
-  { id: 'services', label: 'Services' },
+  { id: 'capabilities', label: 'Capabilities' },
+  { id: 'process', label: 'Process' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
 ] as const

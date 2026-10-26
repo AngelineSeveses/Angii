@@ -28,13 +28,49 @@ export const color = {
   onInkRule: 'rgba(241, 240, 236, 0.14)',
 } as const
 
-// Service cards stack from deep to light ultramarine. Each tint carries the
-// text color that clears 4.5:1 on it.
+// Gradients from the two brand blues: soft lilac light breaking in,
+// deepening to ultramarine. Used for the hero and on case study pages. Text
+// only sits on the ones with a color noted, checked at the lightest point.
+export const gradient = {
+  // The home page hero, under ivory text (6.57) or ivory at 0.86 (5.22) on the
+  // left; the lilac light gathers top right, behind the preview.
+  hero: [
+    'radial-gradient(55% 75% at 90% 10%, rgba(201, 204, 255, 0.6) 0%, rgba(201, 204, 255, 0) 60%)',
+    'radial-gradient(45% 55% at 70% 100%, rgba(85, 98, 248, 0.5) 0%, rgba(85, 98, 248, 0) 70%)',
+    'linear-gradient(155deg, #2635EC 0%, #2230D8 45%, #18219E 100%)',
+  ].join(', '),
+  // The same for narrow screens, where the preview sits under the text: the
+  // lilac light moves to the bottom right, away from it.
+  heroStacked: [
+    'radial-gradient(90% 40% at 100% 100%, rgba(201, 204, 255, 0.55) 0%, rgba(201, 204, 255, 0) 60%)',
+    'linear-gradient(165deg, #2635EC 0%, #2230D8 45%, #18219E 100%)',
+  ].join(', '),
+  // Imagery only (case study device trays): no text sits on it.
+  stage: [
+    'radial-gradient(90% 70% at 8% 0%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 60%)',
+    'linear-gradient(140deg, #D5D9FF 0%, #9AA3FB 28%, #5562F8 58%, #2B3AF7 80%, #1E2BD0 100%)',
+  ].join(', '),
+  // Ultramarine under ivory text (6.57), lilac (4.84) or ivory at 0.86 (5.22):
+  // the case study's closing call to action.
+  brand: [
+    'radial-gradient(70% 90% at 100% 0%, rgba(154, 163, 251, 0.4) 0%, rgba(154, 163, 251, 0) 60%)',
+    'linear-gradient(155deg, #2635EC 0%, #2230D8 45%, #1A24B8 100%)',
+  ].join(', '),
+} as const
+
+// A soft lilac glow over the light canvas. Kept at 0.5 or less so muted gray
+// text still clears 4.5:1 inside it.
+export const glow = (at: string, size = '55% 60%', strength = 0.5) =>
+  `radial-gradient(${size} at ${at}, rgba(201, 204, 255, ${strength}) 0%, rgba(201, 204, 255, 0) 70%)`
+
+// Service cards stack from deep ultramarine to pale lilac. Each tint carries
+// text colors that clear 4.5:1 on it, the softer one included:
+// 7.97 / 5.58, 6.04 / 4.83 and 10.9 / 5.80. Mid blues are skipped on purpose;
+// neither ink nor ivory text reads well on them.
 export const accentTints = [
-  { bg: '#2B3AF7', fg: color.onAccent, muted: 'rgba(241, 240, 236, 0.74)', rule: 'rgba(241, 240, 236, 0.22)' },
-  { bg: '#4552F8', fg: color.onAccent, muted: 'rgba(241, 240, 236, 0.8)', rule: 'rgba(241, 240, 236, 0.24)' },
-  { bg: '#6A74F9', fg: color.ink, muted: 'rgba(14, 14, 14, 0.74)', rule: 'rgba(14, 14, 14, 0.18)' },
-  { bg: '#B9BEFC', fg: color.ink, muted: 'rgba(14, 14, 14, 0.7)', rule: 'rgba(14, 14, 14, 0.14)' },
+  { bg: '#1E2BD0', fg: color.onAccent, muted: 'rgba(241, 240, 236, 0.8)', rule: 'rgba(241, 240, 236, 0.22)' },
+  { bg: '#2B3AF7', fg: color.onAccent, muted: 'rgba(241, 240, 236, 0.86)', rule: 'rgba(241, 240, 236, 0.24)' },
+  { bg: '#B9BEFC', fg: color.ink, muted: 'rgba(14, 14, 14, 0.72)', rule: 'rgba(14, 14, 14, 0.16)' },
 ] as const
 
 export const font = {

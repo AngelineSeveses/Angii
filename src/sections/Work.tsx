@@ -9,29 +9,24 @@ import { BeforeAfter } from '../components/BeforeAfter'
 import { Btn } from '../components/Btn'
 import { PhoneFrame, ProjectShot } from '../components/Frames'
 import { Section, SectionHeader } from '../components/Layout'
-import { SpeedBadges } from '../components/PageSpeed'
+import { SpeedHighlight } from '../components/PageSpeed'
 import { Reveal } from '../components/Reveal'
 import { allProjects, caseStudyHref, featuredProjects, moreProjects, type FeaturedProject } from '../content/projects'
 import { pauseScroll, prefersReducedMotion } from '../motion/motion'
-import { canHover, color, ease } from '../theme/tokens'
+import { canHover, color, ease, font } from '../theme/tokens'
 
 export function Work() {
   const [indexOpen, setIndexOpen] = useState(false)
 
   return (
-    <Section id="work" labelledBy="work-title" tone="ivory">
+    <Section id="work" labelledBy="work-title" tone="ivory" sx={{ pt: { xs: 8, md: 10 } }}>
       <SectionHeader
-        index="01"
+        index="03"
         label="Selected work"
         titleId="work-title"
-        title="Different projects, different problems."
+        title="Real projects. Practical solutions."
         count={featuredProjects.length}
-        lead="Recent websites for an outsourcing company, a builder, two fence companies and a car repair shop."
-        aside={
-          <Btn tone="outline" onClick={() => setIndexOpen(true)} endIcon={<ArrowRight size={18} weight="bold" />} aria-haspopup="dialog">
-            All {allProjects.length} projects
-          </Btn>
-        }
+        lead="Every business has different needs. My work spans service businesses, construction, outsourcing, automotive, and other industries, with an emphasis on making websites easier to understand and use."
       />
 
       {/* One wide card, then pairs, so the grid never reads as one repeated shape. */}
@@ -54,7 +49,7 @@ export function Work() {
         ))}
       </Box>
 
-      <MoreProjects />
+      <MoreProjects onViewAll={() => setIndexOpen(true)} />
       <ProjectIndex open={indexOpen} onClose={() => setIndexOpen(false)} />
     </Section>
   )
@@ -73,7 +68,7 @@ function ProjectCard({ project, index, wide }: { project: FeaturedProject; index
           <ProjectShot
             href={caseStudy}
             label={project.displayUrl}
-            action="Read more"
+            action="View Project"
             name={project.name}
             src={project.images.desktop}
             alt={`${project.name} homepage.`}
@@ -100,8 +95,18 @@ function ProjectCard({ project, index, wide }: { project: FeaturedProject; index
           </Typography>
         </Box>
         <Box sx={{ gridColumn: { md: wide ? '7 / span 6' : 'auto' } }}>
-          <Typography sx={{ color: color.slate, maxWidth: 560 }}>{project.summary}</Typography>
-          <Box component="ul" aria-label="Project type" sx={{ listStyle: 'none', m: 0, mt: 4, p: 0, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+          <Typography sx={{ fontFamily: font.display, fontSize: { xs: '1.25rem', md: '1.375rem' }, lineHeight: 1.25, letterSpacing: '-0.02em', maxWidth: 560 }}>
+            {project.summary}
+          </Typography>
+          <Typography sx={{ color: color.slate, mt: 3, maxWidth: 560 }}>{project.challenge}</Typography>
+          <Typography variant="overline" component="p" id={`${titleId}-focus`} sx={{ m: 0, mt: 5, color: color.muted }}>
+            Focus
+          </Typography>
+          <Box
+            component="ul"
+            aria-labelledby={`${titleId}-focus`}
+            sx={{ listStyle: 'none', m: 0, mt: 2, p: 0, display: 'flex', flexWrap: 'wrap', gap: 2 }}
+          >
             {tags.map((t) => (
               <Typography
                 component="li"
@@ -113,12 +118,16 @@ function ProjectCard({ project, index, wide }: { project: FeaturedProject; index
               </Typography>
             ))}
           </Box>
-          {project.pageSpeed && <SpeedBadges speed={project.pageSpeed} />}
+          {project.pageSpeed && (
+            <Box>
+              <SpeedHighlight speed={project.pageSpeed} pick={project.speedHighlight} />
+            </Box>
+          )}
           {/* The full write-up lives on the project's case study page. */}
           <Box
             component="a"
             href={caseStudy}
-            aria-label={`Read more about ${project.name}`}
+            aria-label={`View the ${project.name} project`}
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -134,7 +143,7 @@ function ProjectCard({ project, index, wide }: { project: FeaturedProject; index
               [canHover]: { '&:hover': { boxShadow: `inset 0 -1px 0 ${color.ink}` }, '&:hover svg': { transform: 'translateX(3px)' } },
             }}
           >
-            Read more
+            View Project
             <ArrowRight size={16} weight="bold" aria-hidden />
           </Box>
         </Box>
@@ -145,7 +154,7 @@ function ProjectCard({ project, index, wide }: { project: FeaturedProject; index
 
 // A sideways rail of phone views. Arrow buttons step one card at a time;
 // touch and trackpads scroll it directly.
-function MoreProjects() {
+function MoreProjects({ onViewAll }: { onViewAll: () => void }) {
   const rail = useRef<HTMLUListElement>(null)
   const [edge, setEdge] = useState({ start: true, end: false })
 
@@ -174,9 +183,9 @@ function MoreProjects() {
       <Box sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 6, mb: { xs: 6, md: 8 } }}>
         <Box>
           <Typography id="more-title" variant="h3" component="h3">
-            More projects
+            More Work
           </Typography>
-          <Typography sx={{ color: color.muted, mt: 2 }}>A few more sites from different industries.</Typography>
+          <Typography sx={{ color: color.muted, mt: 2 }}>Additional projects across different industries.</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <RailButton label="Previous projects" disabled={edge.start} onClick={() => step(-1)}>
@@ -245,6 +254,10 @@ function MoreProjects() {
           </Box>
         ))}
       </Box>
+
+      <Btn tone="outline" onClick={onViewAll} endIcon={<ArrowRight size={18} weight="bold" />} aria-haspopup="dialog" sx={{ mt: { xs: 8, md: 10 } }}>
+        View All Projects
+      </Btn>
     </Box>
   )
 }

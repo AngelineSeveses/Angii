@@ -61,9 +61,29 @@ export type PageSpeed = {
   desktop: SpeedScores
 }
 
+export type ScoreCategory = 'performance' | 'accessibility' | 'bestPractices' | 'seo'
+// The one score a project card quotes, read from the report above so the two
+// never disagree. Each card shows its strongest result.
+export type SpeedHighlight = { device: 'mobile' | 'desktop'; category: ScoreCategory }
+
+// Full-length captures of the live homepage for the case study's laptop and
+// phone, which scroll through them slowly. Captured with headless Chrome at
+// 1440px (laptop) and 390px @2x (phone), then resized to display size.
+export type Screen = { src: string; width: number; height: number }
+export type DeviceScreens = { laptop: Screen; phone: Screen; captured: string }
+
+const CAPTURED = 'Oct 26, 2026'
+const screens = (key: string, laptopHeight = 6000): DeviceScreens => ({
+  laptop: { src: `/images/projects/${key}-laptop.webp`, width: 1200, height: laptopHeight },
+  phone: { src: `/images/projects/${key}-phone.webp`, width: 600, height: 8308 },
+  captured: CAPTURED,
+})
+
 export type FeaturedProject = Project & {
   // One line under the project name.
   summary: string
+  // What the website has to do, shown on the card and the case study.
+  challenge: string
   // Shown under "Read the story", one paragraph per entry.
   story: string[]
   // Values wrapped in [brackets] are drafts and render with a "to confirm" marker.
@@ -75,9 +95,19 @@ export type FeaturedProject = Project & {
   // The live site as it tests today. Not a before/after claim: the old sites
   // can no longer be measured.
   pageSpeed?: PageSpeed
+  // Defaults to desktop performance.
+  speedHighlight?: SpeedHighlight
   // Technical SEO strengths found on the live site, as plain facts.
   seo?: { checked: string; points: string[] }
+  // Laptop and phone captures for the case study header.
+  screens?: DeviceScreens
+  // The client's own logo, from their live site, for the hero's logo band.
+  // `display` is its height there in px, set so the five read at an even weight.
+  logo?: ClientLogo
 }
+
+export type ClientLogo = { src: string; width: number; height: number; display: number }
+
 
 // Before/after images come from the case studies on the previous portfolio
 // (angelineseveses.vercel.app), resized by its image service. Copy them into
@@ -121,12 +151,15 @@ const speed = (report: string, mobile: SpeedScores, desktop: SpeedScores): PageS
 export const featuredProjects: FeaturedProject[] = [
   {
     slug: 'new-media-services',
+    screens: screens('nms'),
+    logo: { src: '/images/clients/nms.png', width: 297, height: 49, display: 25 },
     name: 'New Media Services',
     category: 'Web Design · UI/UX · Website Development',
     url: 'https://newmediaservices.com/',
     displayUrl: 'newmediaservices.com',
     images: shots('nms'),
     summary: 'A clearer website for a global outsourcing company.',
+    challenge: "The challenge is to help visitors understand the company's services, navigate its offering, and find the information relevant to their needs.",
     story: [
       'I worked on both the design and the build here, taking the design concepts all the way to working pages.',
       'New Media Services covers a lot of ground, so most of my effort went into structure: tidy layouts, one consistent look from page to page, and information people can find without digging for it.',
@@ -138,15 +171,19 @@ export const featuredProjects: FeaturedProject[] = [
       { performance: 39, accessibility: 98, bestPractices: 96, seo: 92, fcp: '4.5 s', lcp: '8.9 s', tbt: '810 ms', cls: '0', speedIndex: '8.8 s' },
       { performance: 68, accessibility: 98, bestPractices: 96, seo: 92, fcp: '1.0 s', lcp: '1.5 s', tbt: '460 ms', cls: '0.006', speedIndex: '2.4 s' },
     ),
+    speedHighlight: { device: 'desktop', category: 'accessibility' },
   },
   {
     slug: 'integra-built',
+    screens: screens('integra'),
+    logo: { src: '/images/clients/integra.png', width: 199, height: 96, display: 42 },
     name: 'Integra Built',
     category: 'UI/UX · WordPress Development · Responsive Design',
     url: 'https://www.integra-built.com/',
     displayUrl: 'integra-built.com',
     images: localShot('integra'),
     summary: 'A construction website where asking for a quote is the obvious next step.',
+    challenge: 'A service-focused website needs to present the business clearly, organize its offering, and make it straightforward for potential customers to enquire.',
     story: [
       'Integra Built does construction and remodeling. I helped build their site in WordPress from the design, and worked on how the pages lead people along.',
       'There are a lot of services to explain, so I kept the content well organized and the interface consistent on every screen size. Visitors can see what the company does and get to the quote form without going in circles.',
@@ -173,12 +210,15 @@ export const featuredProjects: FeaturedProject[] = [
   },
   {
     slug: 'americas-fence-and-deck',
+    screens: screens('americasfence'),
+    logo: { src: '/images/clients/americasfence.png', width: 294, height: 64, display: 29 },
     name: 'America’s Fence & Deck',
     category: 'Web Design · UX Improvements · WordPress',
     url: 'https://www.americasfence.com/',
     displayUrl: 'americasfence.com',
     images: localShot('americasfence'),
-    summary: 'Helping homeowners pick the right fence, then ask for an estimate.',
+    summary: 'Helping homeowners choose the right fence and request an estimate.',
+    challenge: 'A website for a local service business should make its services easy to explore and the path to contacting the business easy to follow.',
     story: [
       'I turned the website design into a working WordPress site for homeowners comparing fence and deck options.',
       'The focus was practical: service pages that are easy to read, layouts that are easy to follow, and an estimate button that is never far away, from the first look at the options to the request itself.',
@@ -205,12 +245,15 @@ export const featuredProjects: FeaturedProject[] = [
   },
   {
     slug: 'ja-fence',
+    screens: screens('jafence', 4583),
+    logo: { src: '/images/clients/jafence.png', width: 166, height: 104, display: 46 },
     name: 'J&A Fence',
     category: 'UI/UX · WordPress Development · Content Layout',
     url: 'https://jafence.com/',
     displayUrl: 'jafence.com',
     images: localShot('jafence'),
     summary: 'Fence services that are easy to browse and easy to ask about.',
+    challenge: 'A service website should help visitors understand their options and find the next step without unnecessary friction.',
     story: [
       'I helped build the J&A Fence site from its design, and spent most of my time on the service pages and how they read.',
       'The aim was simple. Someone should be able to look through the fencing options, understand what J&A offers, and always see how to ask for a free estimate.',
@@ -223,6 +266,7 @@ export const featuredProjects: FeaturedProject[] = [
       { performance: 51, accessibility: 94, bestPractices: 100, seo: 100, fcp: '3.5 s', lcp: '14.3 s', tbt: '510 ms', cls: '0', speedIndex: '5.4 s' },
       { performance: 43, accessibility: 94, bestPractices: 100, seo: 100, fcp: '1.0 s', lcp: '4.6 s', tbt: '730 ms', cls: '0.103', speedIndex: '2.3 s' },
     ),
+    speedHighlight: { device: 'desktop', category: 'seo' },
     seo: {
       checked: MEASURED,
       points: [
@@ -237,12 +281,15 @@ export const featuredProjects: FeaturedProject[] = [
   },
   {
     slug: 'gl-auto',
+    screens: screens('glauto'),
+    logo: { src: '/images/clients/glauto.png', width: 207, height: 88, display: 40 },
     name: 'G&L Auto',
     category: 'Web Design · User Experience · WordPress',
     url: 'https://glauto.ca/',
     displayUrl: 'glauto.ca',
     images: { ...shots('glauto'), desktop: '/images/projects/glauto-desktop.jpg' },
     summary: 'Helping drivers find the right service and get in touch with the shop.',
+    challenge: 'A straightforward browsing experience helps visitors find relevant automotive services and the information they need to contact the business.',
     story: [
       'G&L Auto offers repairs, towing and used parts. I helped turn the site design into a working WordPress website for people looking for any of those.',
       'Most of the work went into the service information: making it easy to scan, so a visitor can find the right service, check the details and contact the shop without wondering where to go next.',

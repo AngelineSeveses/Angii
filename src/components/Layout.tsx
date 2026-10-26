@@ -2,17 +2,18 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import type { SxProps, Theme } from '@mui/material/styles'
 import type { ReactNode } from 'react'
-import { color } from '../theme/tokens'
+import { color, gradient } from '../theme/tokens'
 import { Reveal } from './Reveal'
 import { SplitWords } from './SplitWords'
 
 export type Surface = 'ivory' | 'paper' | 'ink' | 'accent'
 
-const surface: Record<Surface, { bg: string; fg: string; muted: string; rule: string }> = {
+// `image` is a gradient laid over the flat color; `bg` stays as the fallback.
+const surface: Record<Surface, { bg: string; image?: string; fg: string; muted: string; rule: string }> = {
   ivory: { bg: color.ivory, fg: color.ink, muted: color.muted, rule: color.rule },
   paper: { bg: color.paper, fg: color.ink, muted: color.muted, rule: color.rule },
   ink: { bg: color.ink, fg: color.onInk, muted: color.onInkMuted, rule: color.onInkRule },
-  accent: { bg: color.accent, fg: color.onAccent, muted: 'rgba(241, 240, 236, 0.74)', rule: 'rgba(241, 240, 236, 0.22)' },
+  accent: { bg: color.accent, image: gradient.brand, fg: color.onAccent, muted: 'rgba(241, 240, 236, 0.86)', rule: 'rgba(241, 240, 236, 0.22)' },
 }
 
 // Content column with responsive gutters (16 / 24 / 40px).
@@ -41,7 +42,7 @@ export function Section({ id, labelledBy, tone = 'ivory', children, sx }: Sectio
       aria-labelledby={labelledBy}
       data-surface={tone}
       sx={[
-        { bgcolor: s.bg, color: s.fg, py: { xs: 20, md: 30 }, position: 'relative' },
+        { bgcolor: s.bg, backgroundImage: s.image, color: s.fg, py: { xs: 20, md: 30 }, position: 'relative' },
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >

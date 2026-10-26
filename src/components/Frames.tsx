@@ -9,7 +9,7 @@ type ProjectShotProps = {
   href: string
   label: string
   name: string
-  // Text on the dark pill, e.g. "Read more" for a case study link.
+  // Text on the dark pill, e.g. "View Project" for a case study link.
   action?: string
   // Width / height of the frame. The screenshot is cropped from the top.
   aspect?: string

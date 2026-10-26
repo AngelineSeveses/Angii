@@ -9,10 +9,12 @@ import { findCaseStudy } from './content/projects'
 import { InquiryProvider } from './context/InquiryProvider'
 import { scrollToTarget, startSmoothScroll } from './motion/motion'
 import { CaseStudy } from './pages/CaseStudy'
-import { About, Faq } from './sections/About'
 import { Process } from './sections/Approach'
+import { Beyond } from './sections/Beyond'
+import { Faq } from './sections/Faq'
 import { ContactForm } from './sections/Contact'
 import { Hero } from './sections/Hero'
+import { Problems } from './sections/Problems'
 import { Services } from './sections/Services'
 import { Work } from './sections/Work'
 import { color } from './theme/tokens'
@@ -63,10 +65,11 @@ export default function App() {
         ) : (
           <>
             <Hero />
-            <Work />
+            <Problems />
             <Services />
+            <Work />
+            <Beyond />
             <Process />
-            <About />
             <Faq />
             <ContactForm />
           </>

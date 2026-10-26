@@ -1,35 +1,35 @@
 export const faqs = [
   {
-    q: 'How much does a project cost?',
-    a: 'It depends on the scope, complexity, deliverables, and timeline. Once I understand what you need, I can help define the work and provide an estimate.',
+    q: 'What types of projects do you take on?',
+    a: 'I focus on website design, WordPress development, and website maintenance. I can help with a new website, a redesign, improvements to an existing site, or ongoing updates.',
   },
   {
-    q: 'How long will it take?',
-    a: "Timelines depend on the project requirements, available content, technical complexity, and feedback process. I'll discuss a realistic timeline before work begins.",
+    q: 'Can you design and build my website?',
+    a: 'Yes. I can work across the design and implementation stages, from planning the pages and designing the interface to building the website and checking the finished experience.',
   },
   {
-    q: 'What kind of projects do you take on?',
-    a: 'I work on website design, WordPress development, interactive web features, and selected research or prototyping projects.',
-  },
-  {
-    q: 'Can you work with an existing website?',
-    a: 'Yes. Depending on the platform and the issue, I can help improve layouts, refine responsive behavior, update pages, customize Elementor, or investigate frontend problems.',
-  },
-  {
-    q: 'Can you design and develop a website?',
-    a: "I can contribute to both design and implementation, depending on the project requirements. We'll discuss the scope, deliverables, and responsibilities before starting.",
+    q: 'Can you work with an existing WordPress website?',
+    a: 'Yes. Depending on the website, I can help with layout improvements, Elementor customization, responsive fixes, content changes, and other agreed updates.',
   },
   {
     q: 'Do you work with agencies?',
-    a: "I'm open to collaborating with agencies and creative teams that need support with web design, WordPress, interactive development, or related digital work.",
+    a: "Yes. I'm open to collaborating with agencies and teams that need additional support with website design, WordPress development, or website maintenance.",
   },
   {
-    q: 'Can you help if I only have an idea?',
-    a: 'Yes. We can discuss the problem, explore possible approaches, and determine whether research or a small prototype would be a useful first step.',
+    q: 'Do you offer ongoing maintenance?',
+    a: 'Yes. Maintenance can include content updates, WordPress and plugin updates, minor design changes, and troubleshooting, depending on the website and agreed scope.',
   },
   {
-    q: 'Do you offer ongoing support?',
-    a: 'We can discuss ongoing updates or support based on the project and what you need after launch.',
+    q: 'How much does a website cost?',
+    a: "Pricing depends on the project's scope, complexity, deliverables, and timeline. Once I understand what you need, I can provide a more relevant estimate.",
+  },
+  {
+    q: 'How long does a project take?',
+    a: "It depends on the size of the project, the requirements, and how quickly content and feedback are provided. I'll discuss the expected timeline before work begins.",
+  },
+  {
+    q: "What if I'm not sure what I need yet?",
+    a: "That's fine. Tell me a little about your business, your current website, and what you'd like to improve. We can work out a sensible starting point together.",
   },
 ]
 

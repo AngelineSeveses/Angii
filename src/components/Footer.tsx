@@ -91,11 +91,12 @@ export function Footer() {
             mt: { xs: 16, md: 24 },
           }}
         >
-          <Box sx={{ gridColumn: { xs: '1 / -1', md: 'span 5' } }}>
+          <Box sx={{ gridColumn: { xs: '1 / -1', md: 'span 4' } }}>
             <Typography sx={{ fontFamily: font.display, fontSize: '1.5rem', lineHeight: 1.2, letterSpacing: '-0.02em' }}>{site.name}</Typography>
             <Typography sx={{ color: color.lilac, mt: 1 }}>{site.role}</Typography>
+            <Typography sx={{ color: color.onAccent, mt: 4, maxWidth: 320 }}>{site.tagline}</Typography>
           </Box>
-          <Box sx={{ gridColumn: { md: '7 / span 2' } }}>
+          <Box sx={{ gridColumn: { md: '6 / span 2' } }}>
             <Column title="Navigation">
               {nav.map((n) => (
                 <li key={n.id}>
@@ -106,8 +107,8 @@ export function Footer() {
               ))}
             </Column>
           </Box>
-          <Box sx={{ gridColumn: { md: '10 / span 3' } }}>
-            <Column title="Elsewhere">
+          <Box sx={{ gridColumn: { md: '8 / span 2' } }}>
+            <Column title="Connect">
               {/* Only profiles with a real link are listed. */}
               {site.social
                 .filter((s) => s.href)
@@ -130,6 +131,15 @@ export function Footer() {
                     </Box>
                   </li>
                 ))}
+            </Column>
+          </Box>
+          <Box sx={{ gridColumn: { xs: '1 / -1', md: '10 / span 3' } }}>
+            <Column title="Email">
+              <li>
+                <Box component="a" href={mailto} sx={linkSx}>
+                  {site.email}
+                </Box>
+              </li>
             </Column>
           </Box>
         </Box>
@@ -177,7 +187,7 @@ export function Footer() {
               [canHover]: { '&:hover': { opacity: 0.72 }, '&:hover svg': { transform: 'translateY(-2px)' } },
             }}
           >
-            Back to top
+            Back to Top
             <ArrowUp size={14} weight="bold" aria-hidden />
           </Box>
         </Box>
