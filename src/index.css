@@ -7,6 +7,12 @@
   --header-h: 64px;
 }
 
+@media (min-width: 900px) {
+  :root {
+    --header-h: 72px;
+  }
+}
+
 html {
   scroll-padding-top: var(--header-h);
   -webkit-text-size-adjust: 100%;

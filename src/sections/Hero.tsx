@@ -1,13 +1,14 @@
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Typography from '@mui/material/Typography'
-import { ArrowDown, ArrowRight, ArrowUpRight, LockSimple, Pause, Play } from '@phosphor-icons/react'
+import { ArrowDown, ArrowRight, ArrowUpRight, Pause, Play } from '@phosphor-icons/react'
 import { useLayoutEffect, useRef, useState } from 'react'
-import { Btn } from '../components/Btn'
+import { Btn, Bubble } from '../components/Btn'
 import { ClientLogos } from '../components/ClientLogos'
 import { PhoneShell, ScrollingScreen } from '../components/DeviceShowcase'
 import { Wrap } from '../components/Layout'
 import { LogoMark } from '../components/Logo'
+import { BrowserFrame } from '../components/Mockup'
 import { SplitWords } from '../components/SplitWords'
 import { featuredProjects } from '../content/projects'
 import { site } from '../content/site'
@@ -32,13 +33,31 @@ export function Hero() {
     if (!el || prefersReducedMotion()) return
     const cleanups: (() => void)[] = []
     const ctx = gsap.context(() => {
-      // The copy is there from the first frame; the work settles in beside it.
+      // The card opens out from just inside its final edges, the headline rises
+      // word by word (SplitWords), the rest of the copy follows in a short
+      // stagger, and the work settles in beside it. Everything is readable and
+      // clickable within about a second.
+      const radius = getComputedStyle(el).borderTopLeftRadius
       gsap
-        .timeline({ defaults: { ease: 'expo.out' }, delay: 0.2 })
-        .from('.hp-mark', { scale: 0.9, rotation: -6, autoAlpha: 0, duration: 1.8 })
-        .from('.hp-window', { y: 40, autoAlpha: 0, duration: 1.3 }, 0.1)
-        .from('.hp-phone', { y: 90, autoAlpha: 0, duration: 1.4 }, 0.35)
-        .from('.hp-chip', { y: 16, scale: 0.92, autoAlpha: 0, duration: 1 }, 0.8)
+        .timeline({ defaults: { ease: 'expo.out' }, delay: 0.1 })
+        .fromTo(
+          el,
+          { clipPath: 'inset(3% 2.5% 3% 2.5% round 48px)' },
+          { clipPath: `inset(0% 0% 0% 0% round ${radius})`, duration: 1.2, clearProps: 'clipPath' },
+        )
+        .from('.hp-rise', { y: 16, autoAlpha: 0, duration: 0.9, stagger: 0.06 }, 0.2)
+        .from('.hp-mark', { scale: 0.9, rotation: -6, autoAlpha: 0, duration: 1.8 }, 0.2)
+        .from('.hp-window', { y: 40, autoAlpha: 0, duration: 1.3 }, 0.3)
+        .from('.hp-phone', { y: 90, autoAlpha: 0, duration: 1.4 }, 0.55)
+        .from('.hp-chip', { y: 16, scale: 0.92, autoAlpha: 0, duration: 1 }, 1)
+
+      // Scrolling on, the card recedes a touch, like a page being set down.
+      gsap.to(el, {
+        scale: 0.96,
+        transformOrigin: '50% 0%',
+        ease: 'none',
+        scrollTrigger: { trigger: el, start: 'top top', end: 'bottom top', scrub: 0.4 },
+      })
 
       // With a mouse, the phone and the score drift a touch more than the window,
       // and the big mark behind them drifts the other way.
@@ -75,7 +94,7 @@ export function Hero() {
   }, [])
 
   return (
-    <Box component="section" aria-labelledby="hero-title" sx={{ pt: { xs: 2, md: 3 }, pb: { xs: 8, md: 10 } }}>
+    <Box component="section" aria-labelledby="hero-title" sx={{ pt: { xs: '8px', md: '12px' }, pb: { xs: 8, md: 10 } }}>
       <Wrap>
         {/* The hero is one blue surface: lilac light gathering behind the work
             (top right on wide screens, bottom on narrow ones, so it never sits
@@ -91,7 +110,13 @@ export function Hero() {
             color: color.onAccent,
             boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.14)',
             px: { xs: 5, sm: 8, md: 10, lg: 14 },
-            py: { xs: 12, md: 14 },
+            // Fills the screen below the bar on a laptop, with the content
+            // centered, so the next section starts right at the fold.
+            minHeight: { xs: 'calc(100svh - var(--header-h) - 16px)', md: 'calc(100svh - var(--header-h) - 24px)' },
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            py: { xs: 12, md: 12 },
             // Focus rings in light, so they show on the blue.
             '& :focus-visible': { outlineColor: color.onAccent },
             '& .Mui-focusVisible': { outlineColor: `${color.onAccent} !important` },
@@ -118,7 +143,7 @@ export function Hero() {
             }}
           >
             <Box sx={{ gridColumn: { md: 'span 6' } }}>
-              <Typography variant="overline" component="p" sx={{ m: 0, display: 'flex', alignItems: 'center', gap: 3, color: onBlueMuted }}>
+              <Typography variant="overline" component="p" className="hp-rise" sx={{ m: 0, display: 'flex', alignItems: 'center', gap: 3, color: onBlueMuted }}>
                 <Box component="span" aria-hidden sx={{ width: 28, height: '1px', bgcolor: color.onAccent }} />
                 Web design · WordPress · Website maintenance
               </Typography>
@@ -127,7 +152,7 @@ export function Hero() {
                 id="hero-title"
                 text="Your website should work as hard as you do."
                 immediate
-                delay={0.05}
+                delay={0.3}
                 sx={{
                   typography: 'h1',
                   fontSize: { xs: '2.75rem', sm: '3.75rem', md: '3.5rem', lg: '4.75rem' },
@@ -137,21 +162,39 @@ export function Hero() {
                   maxWidth: 640,
                 }}
               />
-              <Typography variant="subtitle1" sx={{ color: onBlueMuted, mt: { xs: 6, md: 8 }, maxWidth: 540 }}>
+              <Typography variant="subtitle1" className="hp-rise" sx={{ color: onBlueMuted, mt: { xs: 6, md: 8 }, maxWidth: 540 }}>
                 I design, build, and maintain websites that help businesses communicate clearly, present their work
                 professionally, and make it easier for customers to take the next step.
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mt: 4, maxWidth: 540 }}>
+              <Box className="hp-rise" sx={{ display: 'flex', alignItems: 'center', gap: 3, mt: 4, maxWidth: 540 }}>
                 {site.portrait && (
                   <Box component="img" src={site.portrait} alt="" sx={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                 )}
                 <Typography sx={{ color: onBlueMuted }}>From the first idea to the finished website, you work directly with me.</Typography>
               </Box>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: { xs: 8, md: 10 } }}>
-                <Btn href="#work" tone="light" endIcon={<ArrowDown size={18} weight="bold" />}>
+              <Box className="hp-rise" sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: { xs: 8, md: 10 } }}>
+                <Btn
+                  href="#work"
+                  tone="light"
+                  endIcon={
+                    <Bubble>
+                      <ArrowDown size={16} weight="bold" />
+                    </Bubble>
+                  }
+                  sx={{ ...withBubble, [canHover]: { '&:hover .MuiButton-endIcon svg': { transform: 'translateY(2px)' } } }}
+                >
                   Explore My Work
                 </Btn>
-                <Btn tone="outlineLight" onClick={() => startInquiry()} endIcon={<ArrowRight size={18} weight="bold" />}>
+                <Btn
+                  tone="outlineLight"
+                  onClick={() => startInquiry()}
+                  endIcon={
+                    <Bubble tone="ivory">
+                      <ArrowRight size={16} weight="bold" />
+                    </Bubble>
+                  }
+                  sx={{ ...withBubble, color: color.onAccent }}
+                >
                   Start a Project
                 </Btn>
               </Box>
@@ -171,6 +214,9 @@ export function Hero() {
 
 // Softer ivory for the hero's supporting text; 5.22:1 at the lightest blue.
 const onBlueMuted = 'rgba(241, 240, 236, 0.86)'
+
+// The buttons carry their arrow in a round chip, 6px in from the pill's edge.
+const withBubble = { pl: 6, pr: '6px', py: '6px', gap: 3 } as const
 
 // A soft, layered shadow like a real window resting on the blue; tinted deep
 // blue rather than gray so it sits in the gradient instead of on top of it.
@@ -192,47 +238,11 @@ function LivePreview() {
     <Box ref={root} component="figure" sx={{ m: 0 }}>
       <Box className="hp-stage" sx={{ position: 'relative', aspectRatio: { xs: '7 / 6', md: '6 / 5' } }}>
         <Box className="hp-window" sx={{ position: 'absolute', top: 0, right: 0, width: '92%' }}>
-          <Box
+          <BrowserFrame
             className="hp-window-move"
-            sx={{ bgcolor: color.paper, borderRadius: { xs: '8px', md: '12px' }, overflow: 'hidden', boxShadow: `${lift}, 0 0 0 1px rgba(14,14,14,0.08)` }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: { xs: 2, md: 3 },
-                height: { xs: 30, md: 40 },
-                px: { xs: 2.5, md: 4 },
-                bgcolor: '#F7F6F3',
-                boxShadow: `inset 0 -1px 0 ${color.rule}`,
-              }}
-            >
-              <Box aria-hidden sx={{ display: 'flex', gap: { xs: '5px', md: '7px' } }}>
-                {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => (
-                  <Box key={c} sx={{ width: { xs: 8, md: 11 }, height: { xs: 8, md: 11 }, borderRadius: '50%', bgcolor: c, boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,0.14)' }} />
-                ))}
-              </Box>
-              <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
-                <Box
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 1.5,
-                    width: '60%',
-                    minWidth: 0,
-                    height: { xs: 20, md: 26 },
-                    borderRadius: '7px',
-                    bgcolor: 'rgba(14,14,14,0.05)',
-                    color: color.slate,
-                    fontSize: { xs: '0.6875rem', md: '0.8125rem' },
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  <LockSimple size={11} weight="bold" aria-hidden />
-                  {featured.displayUrl}
-                </Box>
-              </Box>
+            url={featured.displayUrl}
+            sx={{ boxShadow: `${lift}, 0 0 0 1px rgba(14,14,14,0.08)` }}
+            action={
               <ButtonBase
                 onClick={() => setPlaying((p) => !p)}
                 aria-label={playing ? 'Pause the scrolling previews' : 'Play the scrolling previews'}
@@ -248,9 +258,10 @@ function LivePreview() {
               >
                 {playing ? <Pause size={12} weight="fill" /> : <Play size={12} weight="fill" />}
               </ButtonBase>
-            </Box>
+            }
+          >
             <ScrollingScreen kind="laptop" shot={screens.laptop} aspect="16 / 10" radius="0" priority alt={`The ${featured.name} homepage in a desktop browser.`} />
-          </Box>
+          </BrowserFrame>
         </Box>
 
         <Box className="hp-phone" sx={{ position: 'absolute', left: 0, bottom: 0, width: '28%' }}>

@@ -1,5 +1,7 @@
+import Box from '@mui/material/Box'
 import Button, { type ButtonProps } from '@mui/material/Button'
 import type { SxProps, Theme } from '@mui/material/styles'
+import type { ReactNode } from 'react'
 import { canHover, color, ease } from '../theme/tokens'
 
 // primary and ink are the same black pill; accent is the ultramarine pill for
@@ -78,3 +80,26 @@ export function Btn({ tone = 'primary', size = 'md', sx, children, ...rest }: Bt
     </Button>
   )
 }
+
+// A round chip that holds a button's end icon. Give the button a right padding
+// equal to its top padding so the chip sits evenly inside the pill.
+export function Bubble({ children, tone = 'ink', size = 36 }: { children: ReactNode; tone?: 'ink' | 'ivory'; size?: number }) {
+  return (
+    <Box
+      component="span"
+      sx={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        display: 'grid',
+        placeItems: 'center',
+        flexShrink: 0,
+        bgcolor: tone === 'ink' ? color.ink : color.ivory,
+        color: tone === 'ink' ? color.ivory : color.ink,
+      }}
+    >
+      {children}
+    </Box>
+  )
+}
+

@@ -5,13 +5,14 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ArrowLeft, ArrowRight, ArrowUpRight, X } from '@phosphor-icons/react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
-import { BeforeAfter } from '../components/BeforeAfter'
-import { Btn } from '../components/Btn'
-import { PhoneFrame, ProjectShot } from '../components/Frames'
+import { Btn, Bubble } from '../components/Btn'
+import { PhoneFrame } from '../components/Frames'
 import { Section, SectionHeader } from '../components/Layout'
+import { ProjectMockup } from '../components/Mockup'
 import { SpeedHighlight } from '../components/PageSpeed'
 import { Reveal } from '../components/Reveal'
 import { allProjects, caseStudyHref, featuredProjects, moreProjects, type FeaturedProject } from '../content/projects'
+import { useInquiry } from '../context/inquiry'
 import { pauseScroll, prefersReducedMotion } from '../motion/motion'
 import { canHover, color, ease, font } from '../theme/tokens'
 
@@ -29,7 +30,8 @@ export function Work() {
         lead="Every business has different needs. My work spans service businesses, construction, outsourcing, automotive, and other industries, with an emphasis on making websites easier to understand and use."
       />
 
-      {/* One wide card, then pairs, so the grid never reads as one repeated shape. */}
+      {/* White cards, two to a row. With an odd number of projects, the last
+          slot invites the visitor to start one. */}
       <Box
         component="ol"
         sx={{
@@ -37,16 +39,20 @@ export function Work() {
           m: 0,
           p: 0,
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-          columnGap: { xs: 6, md: 8 },
-          rowGap: { xs: 16, md: 20 },
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'repeat(2, minmax(0, 1fr))' },
+          gap: { xs: 4, md: 6 },
         }}
       >
         {featuredProjects.map((project, i) => (
-          <Box component="li" key={project.slug} sx={{ gridColumn: { md: i === 0 ? '1 / -1' : 'auto' } }}>
-            <ProjectCard project={project} index={i} wide={i === 0} />
-          </Box>
+          <Reveal component="li" key={project.slug} delay={(i % 2) * 80} sx={{ display: 'flex' }}>
+            <ProjectCard project={project} index={i} />
+          </Reveal>
         ))}
+        {featuredProjects.length % 2 === 1 && (
+          <Reveal component="li" delay={80} sx={{ display: 'flex' }}>
+            <StartCard />
+          </Reveal>
+        )}
       </Box>
 
       <MoreProjects onViewAll={() => setIndexOpen(true)} />
@@ -55,74 +61,71 @@ export function Work() {
   )
 }
 
-function ProjectCard({ project, index, wide }: { project: FeaturedProject; index: number; wide: boolean }) {
+// One project in a white card: the live homepage on desktop and phone (both
+// scroll while the pointer rests on the card), then the write-up and its
+// real PageSpeed score. The before/after comparison lives on the case study.
+function ProjectCard({ project, index }: { project: FeaturedProject; index: number }) {
   const titleId = `project-${project.slug}`
   const tags = project.category.split(' · ')
   const caseStudy = caseStudyHref(project.slug)
   return (
-    <Box component="article" id={`work-${project.slug}`} aria-labelledby={titleId} sx={{ scrollMarginTop: '16px' }}>
-      <Reveal>
-        {project.compare ? (
-          <BeforeAfter pair={project.compare} name={project.name} sizes={wide ? '(min-width: 1440px) 1360px, 100vw' : '(min-width: 900px) 50vw, 100vw'} />
+    <Box
+      component="article"
+      className="project-card"
+      id={`work-${project.slug}`}
+      aria-labelledby={titleId}
+      sx={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: color.paper,
+        borderRadius: { xs: '24px', md: '28px' },
+        p: { xs: 2, md: 3 },
+        scrollMarginTop: 'calc(var(--header-h) + 16px)',
+        boxShadow: '0 0 0 1px rgba(14, 14, 14, 0.04)',
+        transition: 'box-shadow 300ms ease',
+        [canHover]: { '&:hover': { boxShadow: '0 0 0 1px rgba(14, 14, 14, 0.06), 0 28px 56px -32px rgba(14, 14, 14, 0.32)' } },
+      }}
+    >
+      {/* The picture repeats the "View Project" link below, so it stays out of the tab order. */}
+      <Box component="a" href={caseStudy} tabIndex={-1} aria-hidden sx={{ display: 'block' }}>
+        {project.screens ? (
+          <ProjectMockup project={project} />
         ) : (
-          <ProjectShot
-            href={caseStudy}
-            label={project.displayUrl}
-            action="View Project"
-            name={project.name}
-            src={project.images.desktop}
-            alt={`${project.name} homepage.`}
-            aspect={wide ? '16 / 8' : '16 / 10'}
-          />
+          <Box sx={{ aspectRatio: '16 / 11', borderRadius: { xs: '16px', md: '20px' }, overflow: 'hidden', bgcolor: color.ivory }}>
+            <Box component="img" src={project.images.desktop} alt="" loading="lazy" decoding="async" sx={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
+          </Box>
         )}
-      </Reveal>
+      </Box>
 
-      <Box
-        sx={{
-          mt: { xs: 5, md: 6 },
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: wide ? 'repeat(12, minmax(0, 1fr))' : '1fr' },
-          columnGap: 6,
-          rowGap: 3,
-        }}
-      >
-        <Box sx={{ gridColumn: { md: wide ? 'span 5' : 'auto' } }}>
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', px: { xs: 3, md: 5 }, pt: { xs: 6, md: 7 }, pb: { xs: 4, md: 5 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 4 }}>
+          <Typography id={titleId} variant="h3" component="h3">
+            {project.name}
+          </Typography>
           <Typography variant="overline" component="p" sx={{ m: 0, color: color.muted, fontVariantNumeric: 'tabular-nums' }}>
             ({String(index + 1).padStart(2, '0')})
           </Typography>
-          <Typography id={titleId} variant="h3" component="h3" sx={{ mt: 1 }}>
-            {project.name}
-          </Typography>
         </Box>
-        <Box sx={{ gridColumn: { md: wide ? '7 / span 6' : 'auto' } }}>
-          <Typography sx={{ fontFamily: font.display, fontSize: { xs: '1.25rem', md: '1.375rem' }, lineHeight: 1.25, letterSpacing: '-0.02em', maxWidth: 560 }}>
-            {project.summary}
-          </Typography>
-          <Typography sx={{ color: color.slate, mt: 3, maxWidth: 560 }}>{project.challenge}</Typography>
-          <Typography variant="overline" component="p" id={`${titleId}-focus`} sx={{ m: 0, mt: 5, color: color.muted }}>
-            Focus
-          </Typography>
-          <Box
-            component="ul"
-            aria-labelledby={`${titleId}-focus`}
-            sx={{ listStyle: 'none', m: 0, mt: 2, p: 0, display: 'flex', flexWrap: 'wrap', gap: 2 }}
-          >
-            {tags.map((t) => (
-              <Typography
-                component="li"
-                variant="caption"
-                key={t}
-                sx={{ px: 3, py: 1.5, borderRadius: '999px', bgcolor: color.ivoryDeep, color: color.ink }}
-              >
-                {t}
-              </Typography>
-            ))}
-          </Box>
-          {project.pageSpeed && (
-            <Box>
-              <SpeedHighlight speed={project.pageSpeed} pick={project.speedHighlight} />
-            </Box>
-          )}
+        <Typography sx={{ mt: 3, fontFamily: font.display, fontSize: { xs: '1.1875rem', md: '1.3125rem' }, lineHeight: 1.25, letterSpacing: '-0.02em' }}>
+          {project.summary}
+        </Typography>
+        <Typography sx={{ color: color.slate, mt: 3 }}>{project.challenge}</Typography>
+
+        <Typography variant="overline" component="p" id={`${titleId}-focus`} sx={{ m: 0, mt: 5, color: color.muted }}>
+          Focus
+        </Typography>
+        <Box component="ul" aria-labelledby={`${titleId}-focus`} sx={{ listStyle: 'none', m: 0, mt: 2, p: 0, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+          {tags.map((t) => (
+            <Typography component="li" variant="caption" key={t} sx={{ px: 3, py: 1.5, borderRadius: '999px', bgcolor: color.ivory, color: color.ink }}>
+              {t}
+            </Typography>
+          ))}
+        </Box>
+
+        {/* Pinned to the bottom, so the two cards in a row line up. */}
+        <Box sx={{ mt: 'auto', pt: 6, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
+          {project.pageSpeed && <SpeedHighlight speed={project.pageSpeed} pick={project.speedHighlight} sx={{ mt: 0 }} />}
           {/* The full write-up lives on the project's case study page. */}
           <Box
             component="a"
@@ -132,7 +135,6 @@ function ProjectCard({ project, index, wide }: { project: FeaturedProject; index
               display: 'inline-flex',
               alignItems: 'center',
               gap: 2,
-              mt: 6,
               py: 1,
               color: color.ink,
               fontWeight: 500,
@@ -147,6 +149,51 @@ function ProjectCard({ project, index, wide }: { project: FeaturedProject; index
             <ArrowRight size={16} weight="bold" aria-hidden />
           </Box>
         </Box>
+      </Box>
+    </Box>
+  )
+}
+
+// Fills the empty slot after an odd number of projects with the next step.
+function StartCard() {
+  const { startInquiry } = useInquiry()
+  return (
+    <Box
+      sx={{
+        flex: 1,
+        minHeight: { xs: 360, md: 'auto' },
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        gap: 10,
+        p: { xs: 8, md: 12 },
+        borderRadius: { xs: '24px', md: '28px' },
+        bgcolor: color.accent,
+        color: color.onAccent,
+      }}
+    >
+      <Typography variant="overline" component="p" sx={{ m: 0, color: 'rgba(241, 240, 236, 0.86)' }}>
+        Have a project in mind?
+      </Typography>
+      <Box>
+        <Typography component="h3" sx={{ typography: 'h2', color: 'inherit', maxWidth: 520 }}>
+          Let&rsquo;s make your website work better.
+        </Typography>
+        <Typography variant="subtitle1" sx={{ mt: 5, color: 'rgba(241, 240, 236, 0.86)', maxWidth: 440 }}>
+          You don&rsquo;t need to have every detail figured out before reaching out.
+        </Typography>
+        <Btn
+          tone="light"
+          onClick={() => startInquiry()}
+          endIcon={
+            <Bubble>
+              <ArrowRight size={16} weight="bold" />
+            </Bubble>
+          }
+          sx={{ mt: 8, pl: 6, pr: '6px', py: '6px', gap: 3 }}
+        >
+          Start a Project
+        </Btn>
       </Box>
     </Box>
   )

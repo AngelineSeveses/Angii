@@ -24,11 +24,13 @@ npm run dev
 | Process steps (they light up on hover or tap) and "What you can expect from me" | `src/sections/Approach.tsx` |
 | FAQ layout | `src/sections/Faq.tsx` |
 | Hero: copy, the gradient stage with the J&A Fence browser and phone preview, its PageSpeed gauge | `src/sections/Hero.tsx` |
+| Full-width sticky nav bar, with the dark pill that slides between links | `src/components/Header.tsx` |
+| Project cards' desktop and phone mockups, which scroll on hover; the browser frame shared with the hero | `src/components/Mockup.tsx` |
 | Gray client logo band under the hero | `src/components/ClientLogos.tsx`, `logo` in `projects.ts` |
 | Brand colors, fonts, easing curves | `src/theme/tokens.ts` |
 | Type scale and MUI overrides | `src/theme/theme.ts` |
 | Smooth scroll, in-page links, reduced-motion switch | `src/motion/motion.ts` |
-| Before/after swipe on project cards (drag, touch or arrow keys) | `src/components/BeforeAfter.tsx` |
+| Before/after swipe on case study pages (drag, touch or arrow keys) | `src/components/BeforeAfter.tsx` |
 | Case study pages at `/work/<slug>`, linked from "Read more" | `src/pages/CaseStudy.tsx` |
 | Laptop and phone header that slowly scrolls the live homepage | `src/components/DeviceShowcase.tsx` |
 | Line doodles, two poses each like a GIF: waving in the footer, thumbs up in Beyond the screens | `src/components/WaveDoodle.tsx` |

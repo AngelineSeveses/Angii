@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { visuallyHidden } from '@mui/utils'
 import { ArrowUpRight } from '@phosphor-icons/react'
@@ -18,7 +19,7 @@ function Dot({ score }: { score: number }) {
 
 // One score on a project card, e.g. "93/100 Desktop Performance", linking to
 // the PageSpeed Insights report it comes from.
-export function SpeedHighlight({ speed, pick }: { speed: PageSpeed; pick?: ScorePick }) {
+export function SpeedHighlight({ speed, pick, sx }: { speed: PageSpeed; pick?: ScorePick; sx?: SxProps<Theme> }) {
   const { score, device, category, tested } = quotedScore(speed, pick)
   const label = `${device} ${category}`
   const source = `Google PageSpeed Insights, tested ${tested}`
@@ -29,26 +30,29 @@ export function SpeedHighlight({ speed, pick }: { speed: PageSpeed; pick?: Score
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${score} out of 100, ${label}. ${source}. Open the report in a new tab.`}
-      sx={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: { xs: 4, md: 5 },
-        mt: 6,
-        py: 3,
-        pl: { xs: 4, md: 5 },
-        pr: 4,
-        borderRadius: '18px',
-        bgcolor: color.paper,
-        color: color.ink,
-        textDecoration: 'none',
-        boxShadow: `inset 0 0 0 1px ${color.rule}`,
-        transition: 'box-shadow 200ms ease',
-        '& .speed-go': { transition: `transform 200ms ${ease.out}` },
-        [canHover]: {
-          '&:hover': { boxShadow: `inset 0 0 0 1px ${color.ink}` },
-          '&:hover .speed-go': { transform: 'translate(2px, -2px)' },
+      sx={[
+        {
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: { xs: 4, md: 5 },
+          mt: 6,
+          py: 3,
+          pl: { xs: 4, md: 5 },
+          pr: 4,
+          borderRadius: '18px',
+          bgcolor: color.paper,
+          color: color.ink,
+          textDecoration: 'none',
+          boxShadow: `inset 0 0 0 1px ${color.rule}`,
+          transition: 'box-shadow 200ms ease',
+          '& .speed-go': { transition: `transform 200ms ${ease.out}` },
+          [canHover]: {
+            '&:hover': { boxShadow: `inset 0 0 0 1px ${color.ink}` },
+            '&:hover .speed-go': { transform: 'translate(2px, -2px)' },
+          },
         },
-      }}
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
     >
       <Box
         component="span"
