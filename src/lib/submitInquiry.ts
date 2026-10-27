@@ -1,5 +1,3 @@
-import { site } from '../content/site'
-
 export type Inquiry = {
   name: string
   email: string
@@ -12,22 +10,23 @@ export type Inquiry = {
   website: string
 }
 
-// FormSubmit emails each inquiry to site.email with no account or server.
-// The very first submission sends an "Activate Form" email to that address;
-// nothing is delivered until that link is clicked once.
-// Set VITE_FORM_ENDPOINT to post somewhere else instead (Formspree, a Vercel
-// function, ...); any endpoint that takes JSON and answers 2xx works.
-const endpoint = (import.meta.env.VITE_FORM_ENDPOINT as string | undefined) || `https://formsubmit.co/ajax/${site.email}`
+// Netlify Forms receives each inquiry, filters spam, keeps a copy under Forms in
+// the Netlify dashboard and emails it to the addresses set in Forms > Submission
+// notifications. Netlify finds the form through the hidden copy in index.html, so
+// the form name and field names there must match these. Replying to the
+// notification email answers the sender, because the form has an `email` field.
+const FORM_NAME = 'inquiry'
 
-// Resolves only once the endpoint confirms delivery, so the UI never shows
-// success for a message that was not sent.
+// Resolves only once Netlify accepts the message, so the UI never shows success
+// for a message that was not received.
 export async function submitInquiry(data: Inquiry): Promise<void> {
   if (data.website) return // bot: pretend it worked, send nothing
 
-  const res = await fetch(endpoint, {
+  const res = await fetch('/', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      'form-name': FORM_NAME,
       name: data.name,
       email: data.email,
       company: data.company || '—',
@@ -35,18 +34,10 @@ export async function submitInquiry(data: Inquiry): Promise<void> {
       message: data.message,
       budget: data.budget || '—',
       timeline: data.timeline || '—',
-      _subject: `New inquiry from ${data.name}`,
-      _replyto: data.email,
-      _template: 'table',
-      _captcha: 'false',
-    }),
+      website: '',
+    }).toString(),
   })
-  if (!res.ok) throw new Error(`Inquiry endpoint answered ${res.status}`)
-
-  // FormSubmit answers 200 even when it did not deliver (for example before
-  // the form is activated), and says so in the body.
-  const body = (await res.json().catch(() => null)) as { success?: boolean | string; message?: string } | null
-  if (body && (body.success === false || body.success === 'false')) {
-    throw new Error(body.message || 'Inquiry endpoint did not accept the message')
-  }
+  // Netlify answers 404 when it doesn't know the form, for example before form
+  // detection is turned on, or when running locally.
+  if (!res.ok) throw new Error(`Form submission answered ${res.status}`)
 }

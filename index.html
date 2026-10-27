@@ -24,6 +24,18 @@
         <p><a href="mailto:angelinseveses@gmail.com?subject=Project%20inquiry">angelinseveses@gmail.com</a></p>
       </div>
     </noscript>
+    <!-- How Netlify Forms finds the contact form, which React draws after the page
+         loads. Never shown. Keep the names in step with src/lib/submitInquiry.ts. -->
+    <form name="inquiry" data-netlify="true" netlify-honeypot="website" hidden>
+      <input name="name" />
+      <input type="email" name="email" />
+      <input name="company" />
+      <input name="needs" />
+      <textarea name="message"></textarea>
+      <input name="budget" />
+      <input name="timeline" />
+      <input name="website" />
+    </form>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
