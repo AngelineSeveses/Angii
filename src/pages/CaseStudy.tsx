@@ -12,7 +12,7 @@ import { SpeedReport } from '../components/PageSpeed'
 import { Reveal } from '../components/Reveal'
 import { SplitWords } from '../components/SplitWords'
 import { caseStudyHref, featuredProjects, isDraft, type DeviceScreens, type FeaturedProject } from '../content/projects'
-import { site } from '../content/site'
+import { caseStudyMeta } from '../content/site'
 import { sectionHref } from '../lib/links'
 import { canHover, color, ease, font, glow, gradient } from '../theme/tokens'
 
@@ -41,7 +41,7 @@ export function CaseStudy({ project }: { project: FeaturedProject }) {
 
   useEffect(() => {
     const previous = document.title
-    document.title = `${project.name} · Case study · ${site.name}`
+    document.title = caseStudyMeta(project).title
     return () => {
       document.title = previous
     }

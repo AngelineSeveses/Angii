@@ -144,7 +144,7 @@ export function Hero() {
             <Box sx={{ gridColumn: { md: 'span 6' } }}>
               <Typography variant="overline" component="p" className="hp-rise" sx={{ m: 0, display: 'flex', alignItems: 'center', gap: 3, color: onBlueMuted }}>
                 <Box component="span" aria-hidden sx={{ width: 28, height: '1px', bgcolor: color.onAccent }} />
-                Web design · WordPress · Website maintenance
+                Web designer &amp; WordPress developer
               </Typography>
               <SplitWords
                 component="h1"
