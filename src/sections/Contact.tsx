@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import Select from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
-import { ArrowRight, Check, CheckCircle, WarningCircle } from '@phosphor-icons/react'
+import { Check, CheckCircle, WarningCircle } from '@phosphor-icons/react'
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react'
 import { Btn } from '../components/Btn'
 import { Section, SectionIndex } from '../components/Layout'
@@ -131,7 +131,7 @@ export function ContactForm() {
               <Typography variant="h4" component="p" sx={{ mt: 4 }}>
                 Thanks for reaching out. Your message has been submitted.
               </Typography>
-              <Btn tone="outline" size="sm" onClick={() => setStatus('idle')} sx={{ mt: 8 }}>
+              <Btn tone="white" size="sm" onClick={() => setStatus('idle')} sx={{ mt: 8 }}>
                 Send another message
               </Btn>
             </Box>
@@ -194,7 +194,7 @@ export function ContactForm() {
               </Box>
 
               <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 4, pt: 2 }}>
-                <Btn type="submit" tone="primary" disabled={status === 'sending'} endIcon={status === 'sending' ? undefined : <ArrowRight size={18} weight="bold" />}>
+                <Btn type="submit" tone="blue" disabled={status === 'sending'}>
                   {status === 'sending' ? 'Sending…' : 'Send Project Inquiry'}
                 </Btn>
                 <Typography variant="body2" sx={{ color: color.muted }}>

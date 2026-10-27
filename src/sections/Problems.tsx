@@ -4,6 +4,7 @@ import { ArrowRight } from '@phosphor-icons/react'
 import { Section, SectionIndex } from '../components/Layout'
 import { Reveal } from '../components/Reveal'
 import { SplitWords } from '../components/SplitWords'
+import { ThinkingDoodle } from '../components/WaveDoodle'
 import { color, font } from '../theme/tokens'
 
 // Each card names a problem the visitor may recognise, then answers it.
@@ -69,6 +70,7 @@ export function Problems() {
             Your website is often the first impression people have of your business. If it isn&rsquo;t doing its job, it
             could be making it harder for the right people to choose you.
           </Typography>
+          <ThinkingDoodle bg={color.paper} sx={{ width: { xs: 170, md: 220 }, mt: { xs: 10, md: 14 }, color: color.accent }} />
         </Box>
 
         <Box component="ol" sx={{ gridColumn: { md: '7 / span 6' }, listStyle: 'none', m: 0, p: 0, display: 'grid', gap: { xs: 3, md: 4 } }}>

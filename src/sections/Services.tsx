@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { ArrowDown, ArrowRight } from '@phosphor-icons/react'
 import { Fragment, type ReactNode } from 'react'
 import { Btn } from '../components/Btn'
 import { Section, SectionHeader } from '../components/Layout'
@@ -51,9 +50,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
   const titleId = `service-${service.id}-title`
   const Graphic = graphics[service.id] ?? DesignGraphic
   // "Explore …" leads to the related work; otherwise the button opens the form.
-  const cta = example
-    ? { href: `#work-${example.slug}`, icon: ArrowDown }
-    : { onClick: () => startInquiry(service.need), icon: ArrowRight }
+  const cta = example ? { href: `#work-${example.slug}` } : { onClick: () => startInquiry(service.need) }
 
   return (
     <Box
@@ -89,11 +86,10 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
           </Box>
         </Typography>
         <Btn
-          tone={onDark ? 'light' : 'primary'}
+          tone={onDark ? 'white' : 'blue'}
           size="sm"
           href={cta.href}
           onClick={cta.onClick}
-          endIcon={<cta.icon size={16} weight="bold" />}
           sx={{ display: { xs: 'none', md: 'inline-flex' } }}
         >
           {service.cta}
@@ -182,10 +178,9 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
       </Box>
 
       <Btn
-        tone={onDark ? 'light' : 'primary'}
+        tone={onDark ? 'white' : 'blue'}
         href={cta.href}
         onClick={cta.onClick}
-        endIcon={<cta.icon size={18} weight="bold" />}
         // Long labels like "Explore WordPress Development" wrap on small phones
         // instead of pushing the card past the screen edge.
         sx={{ display: { md: 'none' }, alignSelf: 'flex-start', maxWidth: '100%', whiteSpace: 'normal', textAlign: 'left' }}

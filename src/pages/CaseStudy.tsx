@@ -210,17 +210,15 @@ export function CaseStudy({ project }: { project: FeaturedProject }) {
             </Typography>
           </Box>
           <Box sx={{ gridColumn: { md: '9 / span 4' }, display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: { md: 'flex-end' } }}>
-            <Btn tone="light" href={sectionHref('contact')} endIcon={<ArrowRight size={18} weight="bold" />}>
+            <Btn tone="white" href={sectionHref('contact')}>
               Start a Project
             </Btn>
             <Btn
-              tone="outlineLight"
+              tone="whiteOutline"
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Visit ${project.name} (opens in a new tab)`}
-              endIcon={<ArrowUpRight size={18} weight="bold" />}
-              sx={{ color: color.onAccent }}
             >
               Visit the live site
             </Btn>

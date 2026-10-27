@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { ArrowUpRight } from '@phosphor-icons/react'
 import { Btn } from '../components/Btn'
 import { Section, SectionHeader } from '../components/Layout'
 import { Reveal } from '../components/Reveal'
@@ -116,12 +115,11 @@ export function Research() {
 
           <Box sx={{ mt: 6, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>
             <Btn
-              tone="light"
+              tone="white"
               href={hasLink ? site.experimentsHref : undefined}
               target={hasLink ? '_blank' : undefined}
               rel={hasLink ? 'noopener noreferrer' : undefined}
               disabled={!hasLink}
-              endIcon={<ArrowUpRight size={18} weight="bold" />}
             >
               Explore My Experiments
             </Btn>

@@ -17,20 +17,13 @@ export function Faq() {
   const [expanded, setExpanded] = useState<number | false>(0)
   return (
     <Section labelledBy="faq-title" tone="paper">
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(12, minmax(0, 1fr))' },
-          columnGap: 6,
-          rowGap: 12,
-          alignItems: 'start',
-        }}
-      >
-        <Box sx={{ gridColumn: { md: 'span 5' }, position: { md: 'sticky' }, top: { md: 112 } }}>
-          <Reveal>
+      {/* One centered column: the heading, then the questions beneath it. */}
+      <Box sx={{ maxWidth: 820, mx: 'auto' }}>
+        <Box sx={{ textAlign: 'center', maxWidth: 680, mx: 'auto', mb: { xs: 10, md: 14 } }}>
+          <Reveal sx={{ display: 'flex', justifyContent: 'center' }}>
             <SectionIndex index="06" label="FAQ" tone="paper" />
           </Reveal>
-          <SplitWords id="faq-title" text="A few things you might want to know." sx={{ typography: 'h2', m: 0, mt: { xs: 4, md: 6 }, maxWidth: 520 }} />
+          <SplitWords id="faq-title" text="A few things you might want to know." sx={{ typography: 'h2', m: 0, mt: { xs: 4, md: 6 } }} />
           <Typography sx={{ color: color.muted, mt: 6 }}>
             Something else on your mind?{' '}
             <Box component="a" href={mailto} sx={{ color: color.ink, textUnderlineOffset: '3px', textDecorationColor: color.ruleStrong }}>
@@ -40,7 +33,7 @@ export function Faq() {
           </Typography>
         </Box>
 
-        <Box sx={{ gridColumn: { md: '7 / span 6' }, display: 'grid', gap: 2 }}>
+        <Box sx={{ display: 'grid', gap: 2 }}>
           {faqs.map((f, i) => (
             <Accordion
               key={f.q}

@@ -17,63 +17,53 @@ function Dot({ score }: { score: number }) {
   return <Box component="span" aria-hidden sx={{ width: 8, height: 8, borderRadius: '999px', bgcolor: band(score), flexShrink: 0 }} />
 }
 
-// One score on a project card, e.g. "93/100 Desktop Performance", linking to
-// the PageSpeed Insights report it comes from.
+const scoreGreen = '#008800'
+
+// One score on a project card, e.g. "93/100 Desktop Performance", with where
+// it comes from. A plain label, not a link: the full report is linked from the
+// project's case study.
 export function SpeedHighlight({ speed, pick, sx }: { speed: PageSpeed; pick?: ScorePick; sx?: SxProps<Theme> }) {
   const { score, device, category, tested } = quotedScore(speed, pick)
   const label = `${device} ${category}`
   const source = `Google PageSpeed Insights, tested ${tested}`
   return (
     <Box
-      component="a"
-      href={speed.report}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`${score} out of 100, ${label}. ${source}. Open the report in a new tab.`}
+      component="p"
       sx={[
         {
           display: 'inline-flex',
           alignItems: 'center',
           gap: { xs: 4, md: 5 },
+          m: 0,
           mt: 6,
           py: 3,
           pl: { xs: 4, md: 5 },
-          pr: 4,
+          pr: { xs: 4, md: 5 },
           borderRadius: '18px',
           bgcolor: color.paper,
           color: color.ink,
-          textDecoration: 'none',
           boxShadow: `inset 0 0 0 1px ${color.rule}`,
-          transition: 'box-shadow 200ms ease',
-          '& .speed-go': { transition: `transform 200ms ${ease.out}` },
-          [canHover]: {
-            '&:hover': { boxShadow: `inset 0 0 0 1px ${color.ink}` },
-            '&:hover .speed-go': { transform: 'translate(2px, -2px)' },
-          },
         },
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >
+      {/* The score in PageSpeed green (4.6:1 on white). */}
       <Box
         component="span"
-        aria-hidden
-        sx={{ fontFamily: font.display, fontSize: { xs: '2rem', md: '2.25rem' }, lineHeight: 1, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}
+        sx={{ fontFamily: font.display, fontSize: { xs: '2rem', md: '2.25rem' }, lineHeight: 1, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', color: scoreGreen }}
       >
         {score}
         <Box component="span" sx={{ fontSize: '0.5em', letterSpacing: '-0.01em', color: color.muted }}>
           /100
         </Box>
       </Box>
-      <Box component="span" aria-hidden sx={{ display: 'grid', gap: 0.5 }}>
+      <Box component="span" sx={{ display: 'grid', gap: 0.5 }}>
         <Box component="span" sx={{ fontWeight: 500, fontSize: '0.9375rem', lineHeight: 1.3 }}>
           {label}
         </Box>
         <Box component="span" sx={{ fontSize: '0.75rem', lineHeight: 1.35, color: color.muted }}>
           {source}
         </Box>
-      </Box>
-      <Box component="span" className="speed-go" aria-hidden sx={{ display: 'flex', color: color.muted, alignSelf: 'flex-start' }}>
-        <ArrowUpRight size={14} weight="bold" />
       </Box>
     </Box>
   )

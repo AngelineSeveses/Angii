@@ -12,7 +12,8 @@ const OFFSET: Record<ScreenKind, number> = { laptop: 0.8, phone: 2.2 }
 // The loops run only while `playing`, while root is on screen, and while the
 // pointer is not resting on `hoverTarget`. They are rebuilt when that element
 // changes width, keeping their place. `key` rebuilds them for new captures.
-export function useScreenLoops(root: RefObject<HTMLElement | null>, playing: boolean, hoverTarget: string, key?: unknown) {
+// `pace` stretches the travel time: 1.4 scrolls 40% slower than the default.
+export function useScreenLoops(root: RefObject<HTMLElement | null>, playing: boolean, hoverTarget: string, key?: unknown, pace = 1) {
   const playingRef = useRef(playing)
   const applyRef = useRef<() => void>(() => {})
 
@@ -42,7 +43,7 @@ export function useScreenLoops(root: RefObject<HTMLElement | null>, playing: boo
         const view = screen.clientHeight
         const travel = Math.max(0, shot.offsetHeight - view)
         const tl = gsap.timeline({ repeat: -1, paused: true, delay: built ? 0 : OFFSET[kind] })
-        tl.fromTo(shot, { y: 0 }, { y: -travel, duration: (travel / view) * PACE[kind], ease: 'sine.inOut' })
+        tl.fromTo(shot, { y: 0 }, { y: -travel, duration: (travel / view) * PACE[kind] * pace, ease: 'sine.inOut' })
           .to(shot, { y: 0, duration: 2.4, ease: 'power3.inOut' }, '+=2.2')
           .to({}, { duration: 1.6 })
         if (progress[i]) tl.progress(progress[i])
@@ -95,7 +96,7 @@ export function useScreenLoops(root: RefObject<HTMLElement | null>, playing: boo
       loops.forEach((tl) => tl.kill())
       applyRef.current = () => {}
     }
-  }, [root, hoverTarget, key])
+  }, [root, hoverTarget, key, pace])
 
   useEffect(() => {
     playingRef.current = playing

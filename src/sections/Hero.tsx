@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Typography from '@mui/material/Typography'
-import { ArrowDown, ArrowRight, ArrowUpRight, Pause, Play } from '@phosphor-icons/react'
+import { Pause, Play } from '@phosphor-icons/react'
 import { useLayoutEffect, useRef, useState } from 'react'
-import { Btn, Bubble } from '../components/Btn'
+import { Btn } from '../components/Btn'
 import { ClientLogos } from '../components/ClientLogos'
 import { PhoneShell, ScrollingScreen } from '../components/DeviceShowcase'
 import { Wrap } from '../components/Layout'
@@ -59,13 +59,12 @@ export function Hero() {
         scrollTrigger: { trigger: el, start: 'top top', end: 'bottom top', scrub: 0.4 },
       })
 
-      // With a mouse, the phone and the score drift a touch more than the window,
-      // and the big mark behind them drifts the other way.
+      // With a mouse, the window and the score drift a touch with the pointer,
+      // and the big mark behind them drifts the other way. The phone holds still.
       if (finePointer()) {
         const movers = [
           { sel: '.hp-mark-move', depth: -14 },
           { sel: '.hp-window-move', depth: 6 },
-          { sel: '.hp-phone-move', depth: 16 },
           { sel: '.hp-chip-move', depth: 11 },
         ].map(({ sel, depth }) => ({
           x: gsap.quickTo(sel, 'x', { duration: 1, ease: 'power3.out' }),
@@ -173,28 +172,10 @@ export function Hero() {
                 <Typography sx={{ color: onBlueMuted }}>From the first idea to the finished website, you work directly with me.</Typography>
               </Box>
               <Box className="hp-rise" sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: { xs: 8, md: 10 } }}>
-                <Btn
-                  href="#work"
-                  tone="light"
-                  endIcon={
-                    <Bubble>
-                      <ArrowDown size={16} weight="bold" />
-                    </Bubble>
-                  }
-                  sx={{ ...withBubble, [canHover]: { '&:hover .MuiButton-endIcon svg': { transform: 'translateY(2px)' } } }}
-                >
+                <Btn href="#work" tone="white">
                   Explore My Work
                 </Btn>
-                <Btn
-                  tone="outlineLight"
-                  onClick={() => startInquiry()}
-                  endIcon={
-                    <Bubble tone="ivory">
-                      <ArrowRight size={16} weight="bold" />
-                    </Bubble>
-                  }
-                  sx={{ ...withBubble, color: color.onAccent }}
-                >
+                <Btn tone="whiteOutline" onClick={() => startInquiry()}>
                   Start a Project
                 </Btn>
               </Box>
@@ -215,9 +196,6 @@ export function Hero() {
 // Softer ivory for the hero's supporting text; 5.22:1 at the lightest blue.
 const onBlueMuted = 'rgba(241, 240, 236, 0.86)'
 
-// The buttons carry their arrow in a round chip, 6px in from the pill's edge.
-const withBubble = { pl: 6, pr: '6px', py: '6px', gap: 3 } as const
-
 // A soft, layered shadow like a real window resting on the blue; tinted deep
 // blue rather than gray so it sits in the gradient instead of on top of it.
 const lift = '0 1px 1px rgba(10,16,90,0.08), 0 12px 24px -12px rgba(10,16,90,0.32), 0 48px 80px -32px rgba(10,16,90,0.55)'
@@ -229,7 +207,8 @@ const lift = '0 1px 1px rgba(10,16,90,0.08), 0 12px 24px -12px rgba(10,16,90,0.3
 function LivePreview() {
   const root = useRef<HTMLElement>(null)
   const [playing, setPlaying] = useState(() => !prefersReducedMotion())
-  useScreenLoops(root, playing, '.hp-stage')
+  // A little slower than the case studies: here the page is read in passing.
+  useScreenLoops(root, playing, '.hp-stage', undefined, 1.4)
   const screens = featured.screens!
   const speed = featured.pageSpeed!
   const quote = quotedScore(speed, featured.speedHighlight)
@@ -272,15 +251,12 @@ function LivePreview() {
           </Box>
         </Box>
 
-        {/* The site's real score, straight from its PageSpeed Insights report. */}
+        {/* The site's real score, straight from its PageSpeed Insights report (a label, not a link). */}
         <Box className="hp-chip" sx={{ position: 'absolute', right: { xs: 0, md: '-2%' }, bottom: { xs: '10%', md: '14%' } }}>
           <Box className="hp-chip-move">
             <Box
-              component="a"
-              href={speed.report}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${quote.score} out of 100, ${quote.device} ${quote.category} for ${featured.displayUrl}. Google PageSpeed Insights, tested ${quote.tested}. Open the report in a new tab.`}
+              role="group"
+              aria-label={`${quote.score} out of 100, ${quote.device} ${quote.category} for ${featured.displayUrl}. Google PageSpeed Insights, tested ${quote.tested}.`}
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -290,23 +266,13 @@ function LivePreview() {
                 borderRadius: '14px',
                 bgcolor: color.paper,
                 color: color.ink,
-                textDecoration: 'none',
                 boxShadow: `${lift}, 0 0 0 1px rgba(14,14,14,0.06)`,
-                transition: 'box-shadow 200ms ease',
-                '& .chip-go': { transition: `transform 200ms ${ease.out}` },
-                [canHover]: {
-                  '&:hover': { boxShadow: `${lift}, 0 0 0 1px ${color.ink}` },
-                  '&:hover .chip-go': { transform: 'translate(2px, -2px)' },
-                },
               }}
             >
               <Gauge score={quote.score} />
               <Box aria-hidden sx={{ display: 'grid', gap: 0.25 }}>
-                <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 600, fontSize: { xs: '0.8125rem', md: '0.9375rem' }, lineHeight: 1.25 }}>
+                <Box component="span" sx={{ fontWeight: 600, fontSize: { xs: '0.8125rem', md: '0.9375rem' }, lineHeight: 1.25 }}>
                   {quote.device} {quote.category}
-                  <Box component="span" className="chip-go" sx={{ display: 'flex', color: color.muted }}>
-                    <ArrowUpRight size={12} weight="bold" />
-                  </Box>
                 </Box>
                 <Box component="span" sx={{ fontSize: { xs: '0.6875rem', md: '0.75rem' }, lineHeight: 1.35, color: color.muted }}>
                   PageSpeed Insights · {quote.tested}

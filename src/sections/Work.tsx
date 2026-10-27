@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ArrowLeft, ArrowRight, ArrowUpRight, X } from '@phosphor-icons/react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
-import { Btn, Bubble } from '../components/Btn'
+import { Btn } from '../components/Btn'
 import { PhoneFrame } from '../components/Frames'
 import { Section, SectionHeader } from '../components/Layout'
 import { ProjectMockup } from '../components/Mockup'
@@ -127,27 +127,9 @@ function ProjectCard({ project, index }: { project: FeaturedProject; index: numb
         <Box sx={{ mt: 'auto', pt: 6, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
           {project.pageSpeed && <SpeedHighlight speed={project.pageSpeed} pick={project.speedHighlight} sx={{ mt: 0 }} />}
           {/* The full write-up lives on the project's case study page. */}
-          <Box
-            component="a"
-            href={caseStudy}
-            aria-label={`View the ${project.name} project`}
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 2,
-              py: 1,
-              color: color.ink,
-              fontWeight: 500,
-              textDecoration: 'none',
-              boxShadow: `inset 0 -1px 0 ${color.ruleStrong}`,
-              transition: 'box-shadow 200ms ease',
-              '& svg': { transition: `transform 200ms ${ease.out}` },
-              [canHover]: { '&:hover': { boxShadow: `inset 0 -1px 0 ${color.ink}` }, '&:hover svg': { transform: 'translateX(3px)' } },
-            }}
-          >
+          <Btn href={caseStudy} tone="white" aria-label={`View the ${project.name} project`}>
             View Project
-            <ArrowRight size={16} weight="bold" aria-hidden />
-          </Box>
+          </Btn>
         </Box>
       </Box>
     </Box>
@@ -183,14 +165,9 @@ function StartCard() {
           You don&rsquo;t need to have every detail figured out before reaching out.
         </Typography>
         <Btn
-          tone="light"
+          tone="white"
           onClick={() => startInquiry()}
-          endIcon={
-            <Bubble>
-              <ArrowRight size={16} weight="bold" />
-            </Bubble>
-          }
-          sx={{ mt: 8, pl: 6, pr: '6px', py: '6px', gap: 3 }}
+          sx={{ mt: 8 }}
         >
           Start a Project
         </Btn>
@@ -302,7 +279,7 @@ function MoreProjects({ onViewAll }: { onViewAll: () => void }) {
         ))}
       </Box>
 
-      <Btn tone="outline" onClick={onViewAll} endIcon={<ArrowRight size={18} weight="bold" />} aria-haspopup="dialog" sx={{ mt: { xs: 8, md: 10 } }}>
+      <Btn tone="white" onClick={onViewAll} aria-haspopup="dialog" sx={{ mt: { xs: 8, md: 10 } }}>
         View All Projects
       </Btn>
     </Box>

@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Typography from '@mui/material/Typography'
-import { ArrowUpRight } from '@phosphor-icons/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { nav, mailto, site, type NavId } from '../content/site'
 import { useInquiry } from '../context/inquiry'
@@ -9,7 +8,7 @@ import { useActiveSection } from '../hooks/useActiveSection'
 import { sectionHref } from '../lib/links'
 import { pauseScroll } from '../motion/motion'
 import { canHover, color, ease, font, reducedMotion } from '../theme/tokens'
-import { Btn, Bubble } from './Btn'
+import { Btn } from './Btn'
 import { Wrap } from './Layout'
 
 const navIds = nav.map((n) => n.id)
@@ -93,18 +92,12 @@ export function Header() {
           <NavLinks active={active} />
 
           <Box sx={{ justifySelf: 'end', display: 'flex', alignItems: 'center' }}>
-            {/* The one blue thing in the bar: the action, kept apart from the
-                dark pill that marks where you are. */}
+            {/* The call to action, in brand blue like the current section's link. */}
             <Btn
-              tone="accent"
+              tone="blue"
               size="sm"
               onClick={() => startInquiry()}
-              endIcon={
-                <Bubble tone="ivory" size={30}>
-                  <SwapArrow />
-                </Bubble>
-              }
-              sx={{ display: { xs: 'none', md: 'inline-flex' }, pl: 5, pr: '5px', py: '5px', gap: 3, ...swapOnHover }}
+              sx={{ display: { xs: 'none', md: 'inline-flex' } }}
             >
               Let&rsquo;s Talk
             </Btn>
@@ -125,122 +118,52 @@ const barShadow = {
 // The phone menu card floats a little off the page, like a sheet.
 const cardShadow = '0 0 0 1px rgba(14, 14, 14, 0.06), 0 1px 2px rgba(10, 16, 90, 0.08), 0 24px 48px -20px rgba(10, 16, 90, 0.4)'
 
-// The arrow in the call to action leaves up and to the right on hover while
-// a second one slides in from the bottom left, so it reads as "go".
-function SwapArrow({ size = 14 }: { size?: number }) {
-  const arrow = { position: 'absolute', inset: 0, display: 'flex', transition: `transform 240ms ${ease.out}` } as const
-  return (
-    <Box component="span" sx={{ position: 'relative', display: 'block', width: size, height: size, overflow: 'hidden' }}>
-      <Box component="span" className="swap-out" sx={arrow}>
-        <ArrowUpRight size={size} weight="bold" />
-      </Box>
-      <Box component="span" className="swap-in" sx={{ ...arrow, transform: 'translate(-110%, 110%)' }}>
-        <ArrowUpRight size={size} weight="bold" />
-      </Box>
-    </Box>
-  )
-}
-
-const swapOnHover = {
-  // Btn nudges end icons on hover; the swap replaces that here.
-  '&:hover .MuiButton-endIcon svg': { transform: 'none' },
-  [canHover]: {
-    '&:hover .swap-out': { transform: 'translate(110%, -110%)' },
-    '&:hover .swap-in': { transform: 'none' },
-  },
-  [reducedMotion]: { '& .swap-out, & .swap-in': { transition: 'none' } },
-} as const
-
-const linkText = {
-  display: 'block',
-  px: 4,
-  py: 2,
-  fontSize: '0.875rem',
-  lineHeight: '20px',
-  fontWeight: 500,
-  whiteSpace: 'nowrap',
-} as const
-
-// The links, with one dark pill that marks where you are: it rests on the
-// section you're reading and slides to whichever link the pointer is over.
-// The pill is a second, dark copy of the links clipped to one link's shape,
-// so the text color flips exactly at its edge and only clip-path animates.
+// Plain text links. The section you're reading is marked in brand blue with
+// a short underline; hovering only darkens the text.
 function NavLinks({ active }: { active: NavId | null }) {
-  const list = useRef<HTMLUListElement>(null)
-  const [hovered, setHovered] = useState<NavId | null>(null)
-  const [spans, setSpans] = useState<Partial<Record<NavId, { left: number; right: number }>>>({})
-  const [lastClip, setLastClip] = useState('inset(0 50% 0 50% round 999px)')
-
-  // Measured by a ResizeObserver: it fires once when observing starts, and
-  // again when the web font arrives and the links change width.
-  useEffect(() => {
-    const ul = list.current
-    if (!ul) return
-    const ro = new ResizeObserver(() => {
-      const width = ul.offsetWidth
-      const next: Partial<Record<NavId, { left: number; right: number }>> = {}
-      ul.querySelectorAll<HTMLElement>('[data-id]').forEach((a) => {
-        next[a.dataset.id as NavId] = { left: a.offsetLeft, right: width - a.offsetLeft - a.offsetWidth }
-      })
-      setSpans(next)
-    })
-    ro.observe(ul)
-    return () => ro.disconnect()
-  }, [])
-
-  const target = hovered ?? active
-  const span = target ? spans[target] : undefined
-  const clip = span ? `inset(0 ${span.right}px 0 ${span.left}px round 999px)` : lastClip
-  // Remember the last position, so the pill fades out where it was instead of jumping.
-  if (span && clip !== lastClip) setLastClip(clip)
-
   return (
     <Box component="nav" aria-label="Primary" sx={{ display: { xs: 'none', md: 'block' } }}>
-      <Box sx={{ position: 'relative' }} onPointerLeave={() => setHovered(null)}>
-        <Box component="ul" ref={list} sx={{ display: 'flex', listStyle: 'none', m: 0, p: 0 }}>
-          {nav.map((item) => (
+      <Box component="ul" sx={{ display: 'flex', gap: 8, listStyle: 'none', m: 0, p: 0 }}>
+        {nav.map((item) => {
+          const current = active === item.id
+          return (
             <li key={item.id}>
               <Box
                 component="a"
-                data-id={item.id}
                 href={sectionHref(item.id)}
-                aria-current={active === item.id ? 'true' : undefined}
-                onPointerEnter={() => setHovered(item.id)}
-                onFocus={() => setHovered(item.id)}
-                onBlur={() => setHovered(null)}
-                sx={{ ...linkText, color: color.slate, textDecoration: 'none', borderRadius: '999px' }}
+                aria-current={current ? 'true' : undefined}
+                sx={{
+                  position: 'relative',
+                  display: 'block',
+                  py: 2,
+                  fontSize: '0.875rem',
+                  lineHeight: '20px',
+                  fontWeight: 500,
+                  whiteSpace: 'nowrap',
+                  textDecoration: 'none',
+                  color: current ? color.accent : color.slate,
+                  transition: 'color 200ms ease',
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    bottom: 2,
+                    height: '2px',
+                    borderRadius: '2px',
+                    bgcolor: color.accent,
+                    transform: current ? 'scaleX(1)' : 'scaleX(0)',
+                    transition: `transform 300ms ${ease.out}`,
+                  },
+                  [canHover]: { '&:hover': { color: current ? color.accent : color.ink } },
+                  [reducedMotion]: { '&::after': { transition: 'none' } },
+                }}
               >
                 {item.label}
               </Box>
             </li>
-          ))}
-        </Box>
-        <Box
-          component="ul"
-          aria-hidden
-          sx={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            listStyle: 'none',
-            m: 0,
-            p: 0,
-            pointerEvents: 'none',
-            bgcolor: color.ink,
-            color: color.ivory,
-            borderRadius: '999px',
-            clipPath: clip,
-            opacity: span ? 1 : 0,
-            transition: `clip-path 260ms ${ease.out}, opacity 160ms ease`,
-            [reducedMotion]: { transition: 'opacity 160ms ease' },
-          }}
-        >
-          {nav.map((item) => (
-            <Box component="li" key={item.id} sx={linkText}>
-              {item.label}
-            </Box>
-          ))}
-        </Box>
+          )
+        })}
       </Box>
     </Box>
   )
@@ -395,17 +318,11 @@ function MobileMenu({ open, onClose, active }: { open: boolean; onClose: () => v
 
         <Box sx={{ display: 'grid', gap: 3, mt: 2, p: 2, pt: 4, boxShadow: `inset 0 1px 0 ${color.rule}` }}>
           <Btn
-            tone="accent"
-            endIcon={
-              <Bubble tone="ivory" size={36}>
-                <SwapArrow size={16} />
-              </Bubble>
-            }
+            tone="blue"
             onClick={() => {
               onClose()
               startInquiry()
             }}
-            sx={{ justifyContent: 'space-between', pl: 6, pr: '6px', py: '6px', ...swapOnHover }}
           >
             Let&rsquo;s Talk
           </Btn>
