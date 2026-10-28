@@ -12,24 +12,25 @@ const pages: Page[] = [
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-// Who the site belongs to, in the form Google reads for the name and profile links
-// it shows in results.
-const schema = {
+// Who the site belongs to, in the form Google reads for the profile links it
+// shows in results.
+const person = {
   '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'Person',
-      '@id': `${site.url}/#person`,
-      name: site.name,
-      jobTitle: site.role,
-      url: `${site.url}/`,
-      email: `mailto:${site.email}`,
-      sameAs: site.social.map((s) => s.href).filter(Boolean),
-      knowsAbout: ['Website design', 'WordPress development', 'Website maintenance', 'UI/UX design', 'Responsive web design'],
-    },
-    { '@type': 'WebSite', '@id': `${site.url}/#website`, url: `${site.url}/`, name: site.name, publisher: { '@id': `${site.url}/#person` } },
-  ],
+  '@type': 'Person',
+  '@id': `${site.url}/#person`,
+  name: site.name,
+  jobTitle: site.role,
+  url: `${site.url}/`,
+  email: `mailto:${site.email}`,
+  sameAs: site.social.map((s) => s.href).filter(Boolean),
+  knowsAbout: ['Website design', 'WordPress development', 'Website maintenance', 'UI/UX design', 'Responsive web design'],
 }
+
+// The site name Google shows above the result instead of the host's name. Google
+// reads it from the home page only, in this exact shape.
+const website = { '@context': 'https://schema.org', '@type': 'WebSite', name: site.name, url: `${site.url}/` }
+
+const jsonLd = (data: object) => `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`
 
 const headTags = (page: Page) => {
   const url = site.url + page.path
@@ -47,7 +48,8 @@ const headTags = (page: Page) => {
     `<meta property="og:image:height" content="630" />`,
     `<meta property="og:image:alt" content="${esc(homeMeta.title)}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
-    `<script type="application/ld+json">${JSON.stringify(schema).replace(/</g, '\\u003c')}</script>`,
+    ...(page.path === '/' ? [jsonLd(website)] : []),
+    jsonLd(person),
   ].join('\n    ')
 }
 

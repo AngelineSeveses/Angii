@@ -7,6 +7,10 @@
          per page by the seo plugin in vite.config.ts from src/content/site.ts. -->
     <!-- seo -->
     <meta name="theme-color" content="#F1F0EC" />
+    <!-- Google shows the .ico or PNG beside search results (it skips SVG). Without
+         our own favicon.ico, Netlify serves its logo at that address. -->
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
